@@ -29,7 +29,6 @@
             padding-bottom: 120px;
         }
 
-        /* Seletor de Idioma Superior */
         .language-picker-container {
             background-color: #0d0111;
             padding: 0.5rem 1rem;
@@ -67,7 +66,6 @@
             justify-content: center;
         }
 
-        /* Container da Logo */
         .logo-container {
             margin-bottom: 1rem;
         }
@@ -208,6 +206,57 @@
             margin-top: 0.5rem;
         }
 
+        /* Botão para adicionar açaí montado */
+        .btn-add-custom {
+            background: var(--yellow-bright);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn-add-custom:hover {
+            background: #e6c200;
+        }
+
+        /* Lista de Açaís Montados */
+        .custom-list {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .custom-item-card {
+            background: rgba(138, 43, 226, 0.15);
+            border: 1px solid var(--purple-neon);
+            padding: 0.8rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .custom-item-info {
+            font-size: 0.9rem;
+        }
+
+        .btn-remove-item {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
         .cart-bar {
             position: fixed;
             bottom: 0;
@@ -246,7 +295,6 @@
 </head>
 <body>
 
-    <!-- Barra Superior de Idiomas -->
     <div class="language-picker-container">
         <label for="languageSelect" data-i18n="selectLanguage">Idioma / Language:</label>
         <select id="languageSelect" class="lang-select" onchange="changeLanguage(this.value)">
@@ -275,19 +323,19 @@
                     <img src="imagens/300ml.png" alt="300ml">
                     <strong>300ml</strong>
                     <span class="price-tag">R$ 13,00</span>
-                    <input type="radio" name="tamanho_custom" value="300ml" data-preco="13.00" onclick="calcularTotal()">
+                    <input type="radio" name="tamanho_custom" value="300ml" data-preco="13.00">
                 </label>
                 <label class="option-card">
                     <img src="imagens/500ml.png" alt="500ml">
                     <strong>500ml</strong>
                     <span class="price-tag">R$ 20,00</span>
-                    <input type="radio" name="tamanho_custom" value="500ml" data-preco="20.00" onclick="calcularTotal()">
+                    <input type="radio" name="tamanho_custom" value="500ml" data-preco="20.00">
                 </label>
                 <label class="option-card">
                     <img src="imagens/700ml.png" alt="700ml">
                     <strong>700ml</strong>
                     <span class="price-tag">R$ 27,00</span>
-                    <input type="radio" name="tamanho_custom" value="700ml" data-preco="27.00" onclick="calcularTotal()">
+                    <input type="radio" name="tamanho_custom" value="700ml" data-preco="27.00">
                 </label>
             </div>
         </div>
@@ -295,45 +343,49 @@
         <div class="step-box">
             <div class="step-title" data-i18n="step2Title">2. Acompanhamentos (9 Opções)</div>
             <div class="options-grid">
-                <label class="option-card"><img src="imagens/leiteempo.png"><strong data-i18n="itemLeitePo">Leite em Pó</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="acomp" value="Leite em Pó" data-preco="1.50" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/leitecondensado.png"><strong data-i18n="leitecondensado">Leite Condensado</strong><span class="price-tag">+R$ 1,00</span><input type="checkbox" class="extra-item" name="acomp" value="leitecondensado" data-preco="1.00" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/farofa.png"><strong data-i18n="itemFarofa">Farofa de amendoim</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="acomp" value="Farofa de amendoim" data-preco="1.50" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/confete.png"><strong>Confete</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Confete" data-preco="2.00" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/ovomaltine.png"><strong>Ovomaltine</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Ovomaltine" data-preco="2.00" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/nutella.png"><strong>Nutella</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="acomp" value="Nutella" data-preco="1.50" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/chocoball.png"><strong data-i18n="itemCoco">Chocoball</strong><span class="price-tag">+R$ 1,00</span><input type="checkbox" class="extra-item" name="acomp" value="Chocoball" data-preco="1.00" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/granola.png"><strong>Granola</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Granola" data-preco="2.00" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/chocolatecomavela.png"><strong data-i18n="itemChocolatecomavelã">Chocolate com Avelã</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Chocolate com Avelã" data-preco="2.00" onclick="calcularTotal()"></label>
+                <label class="option-card"><img src="imagens/leiteempo.png"><strong data-i18n="itemLeitePo">Leite em Pó</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="acomp" value="Leite em Pó" data-preco="1.50"></label>
+                <label class="option-card"><img src="imagens/leitecondensado.png"><strong data-i18n="leitecondensado">Leite Condensado</strong><span class="price-tag">+R$ 1,00</span><input type="checkbox" class="extra-item" name="acomp" value="Leite Condensado" data-preco="1.00"></label>
+                <label class="option-card"><img src="imagens/farofa.png"><strong data-i18n="itemFarofa">Farofa de amendoim</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="acomp" value="Farofa de amendoim" data-preco="1.50"></label>
+                <label class="option-card"><img src="imagens/confete.png"><strong>Confete</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Confete" data-preco="2.00"></label>
+                <label class="option-card"><img src="imagens/ovomaltine.png"><strong>Ovomaltine</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Ovomaltine" data-preco="2.00"></label>
+                <label class="option-card"><img src="imagens/nutella.png"><strong>Nutella</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="acomp" value="Nutella" data-preco="1.50"></label>
+                <label class="option-card"><img src="imagens/chocoball.png"><strong data-i18n="itemCoco">Chocoball</strong><span class="price-tag">+R$ 1,00</span><input type="checkbox" class="extra-item" name="acomp" value="Chocoball" data-preco="1.00"></label>
+                <label class="option-card"><img src="imagens/granola.png"><strong>Granola</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Granola" data-preco="2.00"></label>
+                <label class="option-card"><img src="imagens/chocolatecomavela.png"><strong data-i18n="itemChocolatecomavelã">Chocolate com Avelã</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="acomp" value="Chocolate com Avelã" data-preco="2.00"></label>
             </div>
         </div>
 
         <div class="step-box">
             <div class="step-title" data-i18n="step3Title">3. Frutas (4 Opções)</div>
             <div class="options-grid">
-                <label class="option-card"><img src="imagens/banana.png"><strong data-i18n="itemBanana">Banana</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="fruta" value="Banana" data-preco="2.00" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/morango.png"><strong data-i18n="itemMorango">Morango</strong><span class="price-tag">+R$ 3,00</span><input type="checkbox" class="extra-item" name="fruta" value="Morango" data-preco="3.00" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/uva.png"><strong data-i18n="itemUva">Uva</strong><span class="price-tag">+R$ 2,50</span><input type="checkbox" class="extra-item" name="fruta" value="Uva" data-preco="2.50" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/abacaxi.png"><strong>Abacaxi</strong><span class="price-tag">+R$ 3,00</span><input type="checkbox" class="extra-item" name="fruta" value="Abacaxi" data-preco="3.00" onclick="calcularTotal()"></label>
+                <label class="option-card"><img src="imagens/banana.png"><strong data-i18n="itemBanana">Banana</strong><span class="price-tag">+R$ 2,00</span><input type="checkbox" class="extra-item" name="fruta" value="Banana" data-preco="2.00"></label>
+                <label class="option-card"><img src="imagens/morango.png"><strong data-i18n="itemMorango">Morango</strong><span class="price-tag">+R$ 3,00</span><input type="checkbox" class="extra-item" name="fruta" value="Morango" data-preco="3.00"></label>
+                <label class="option-card"><img src="imagens/uva.png"><strong data-i18n="itemUva">Uva</strong><span class="price-tag">+R$ 2,50</span><input type="checkbox" class="extra-item" name="fruta" value="Uva" data-preco="2.50"></label>
+                <label class="option-card"><img src="imagens/abacaxi.png"><strong>Abacaxi</strong><span class="price-tag">+R$ 3,00</span><input type="checkbox" class="extra-item" name="fruta" value="Abacaxi" data-preco="3.00"></label>
             </div>
         </div>
 
         <div class="step-box">
             <div class="step-title" data-i18n="step4Title">4. Coberturas (2 Opções)</div>
             <div class="options-grid">
-                <label class="option-card"><img src="imagens/coberturamorango.png"><strong data-i18n="itemLeiteCond">Morango</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="cobertura" value="Cobertura de Morango" data-preco="1.50" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/caramelo.png"><strong>Caramelo</strong><span class="price-tag">+R$ 4,00</span><input type="checkbox" class="extra-item" name="cobertura" value="Caramelo" data-preco="4.00" onclick="calcularTotal()"></label>
+                <label class="option-card"><img src="imagens/coberturamorango.png"><strong data-i18n="itemLeiteCond">Morango</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="cobertura" value="Cobertura de Morango" data-preco="1.50"></label>
+                <label class="option-card"><img src="imagens/caramelo.png"><strong>Caramelo</strong><span class="price-tag">+R$ 4,00</span><input type="checkbox" class="extra-item" name="cobertura" value="Caramelo" data-preco="4.00"></label>
             </div>
         </div>
 
         <div class="step-box">
-            <div class="step-title">Quantidade para o Açaí Montado</div>
-            <select id="qtd_custom" class="qty-select" onchange="calcularTotal()">
-                <option value="1">Qtd: x1</option>
-                <option value="2">Qtd: x2</option>
-                <option value="3">Qtd: x3</option>
-                <option value="4">Qtd: x4</option>
-                <option value="5">Qtd: x5</option>
-            </select>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select id="qtd_custom" class="qty-select" style="max-width: 120px; margin-top: 0;">
+                    <option value="1">Qtd: x1</option>
+                    <option value="2">Qtd: x2</option>
+                    <option value="3">Qtd: x3</option>
+                    <option value="4">Qtd: x4</option>
+                    <option value="5">Qtd: x5</option>
+                </select>
+                <button type="button" class="btn-add-custom" onclick="adicionarAcaiCustomizado()">+ Adicionar este Açaí ao Pedido</button>
+            </div>
+            
+            <div id="lista_custom_container" class="custom-list"></div>
         </div>
 
         <h2 class="section-title" data-i18n="option2Title">Opção 2: Açaís Prontos</h2>
@@ -422,7 +474,7 @@
             <div class="options-grid">
                 <div class="option-card">
                     <img src="imagens/comboarcoiris.png" alt="2 Açaís Arco-íris">
-                    <strong data-i18n="comboarcoiris.png">2 Açaís Arco-íris</strong>
+                    <strong>2 Açaís Arco-íris</strong>
                     <span data-i18n="comboCasalDesc">2x 300ml com desconto</span>
                     <span class="price-tag">R$ 35,00</span>
                     <label><input type="checkbox" class="combo-item" id="combo_1" value="2 Açaís Arco-íris" data-preco="35.00" onclick="calcularTotal()"> Selecionar</label>
@@ -496,6 +548,7 @@
 
     <script>
         const SEU_NUMERO_WHATSAPP = "5541987026386";
+        let acaisCustomizados = [];
 
         const translations = {
             pt: {
@@ -513,8 +566,7 @@
                 pronto3Title: "3. Arco-íris",
                 pronto4Title: "4. Banana Crunch",
                 option3Title: "Opção 3: Combos Especiais",
-                comboCasal: "Combo Casal",
-                comboCasalDesc: "2x 500ml + 4 Acomp",
+                comboCasalDesc: "2x 300ml com desconto",
                 comboGalera: "Combo Galera",
                 comboGaleraDesc: "3x 700ml + Barca",
                 comboKidsDesc: "1x 300ml + Confetti",
@@ -528,14 +580,12 @@
                 totalText: "Total:",
                 btnOrder: "Enviar Pedido 🚀",
                 itemLeitePo: "Leite em Pó",
-                itemGranola: "Granola",
-                itemPacoca: "Paçoca",
-                itemCoco: "Coco Ralado",
-                itemGotaChoco: "Gotas de Chocolate",
+                itemFarofa: "Farofa de amendoim",
+                itemCoco: "Chocoball",
                 itemBanana: "Banana",
                 itemMorango: "Morango",
                 itemUva: "Uva",
-                itemLeiteCond: "Leite Condensado"
+                itemLeiteCond: "Morango"
             },
             es: {
                 selectLanguage: "Idioma / Language:",
@@ -552,8 +602,7 @@
                 pronto3Title: "3. Arco-íris",
                 pronto4Title: "4. Banana Crunch",
                 option3Title: "Opción 3: Combos Especiales",
-                comboCasal: "Combo Pareja",
-                comboCasalDesc: "2x 500ml + 4 Acomp",
+                comboCasalDesc: "2x 300ml con descuento",
                 comboGalera: "Combo Amigos",
                 comboGaleraDesc: "3x 700ml + Barca",
                 comboKidsDesc: "1x 300ml + Confetti",
@@ -567,14 +616,12 @@
                 totalText: "Total:",
                 btnOrder: "Enviar Pedido 🚀",
                 itemLeitePo: "Leche en Polvo",
-                itemGranola: "Granola",
-                itemPacoca: "Paçoca",
-                itemCoco: "Coco Rallado",
-                itemGotaChoco: "Gotas de Chocolate",
+                itemFarofa: "Cacahuate molido",
+                itemCoco: "Chocoball",
                 itemBanana: "Banana",
                 itemMorango: "Fresa",
                 itemUva: "Uva",
-                itemLeiteCond: "Leche Condensada"
+                itemLeiteCond: "Fresa"
             },
             en: {
                 selectLanguage: "Language / Idioma:",
@@ -591,8 +638,7 @@
                 pronto3Title: "3. Rainbow",
                 pronto4Title: "4. Banana Crunch",
                 option3Title: "Option 3: Special Combos",
-                comboCasal: "Couple Combo",
-                comboCasalDesc: "2x 500ml + 4 Toppings",
+                comboCasalDesc: "2x 300ml with discount",
                 comboGalera: "Group Combo",
                 comboGaleraDesc: "3x 700ml + Boat",
                 comboKidsDesc: "1x 300ml + Confetti",
@@ -606,14 +652,12 @@
                 totalText: "Total:",
                 btnOrder: "Send Order 🚀",
                 itemLeitePo: "Milk Powder",
-                itemGranola: "Granola",
-                itemPacoca: "Paçoca (Peanut Candy)",
-                itemCoco: "Shredded Coconut",
-                itemGotaChoco: "Chocolate Chips",
+                itemFarofa: "Peanut Powder",
+                itemCoco: "Chocoball",
                 itemBanana: "Banana",
                 itemMorango: "Strawberry",
                 itemUva: "Grape",
-                itemLeiteCond: "Condensed Milk"
+                itemLeiteCond: "Strawberry"
             }
         };
 
@@ -632,23 +676,80 @@
             }
         }
 
+        function adicionarAcaiCustomizado() {
+            const tamanhoRadio = document.querySelector('input[name="tamanho_custom"]:checked');
+            if (!tamanhoRadio) {
+                alert("Selecione o tamanho do Açaí!");
+                return;
+            }
+
+            const tamanho = tamanhoRadio.value;
+            let precoUnitario = parseFloat(tamanhoRadio.getAttribute('data-preco'));
+            const extrasList = [];
+
+            document.querySelectorAll('.extra-item:checked').forEach(item => {
+                extrasList.push(item.value);
+                precoUnitario += parseFloat(item.getAttribute('data-preco'));
+            });
+
+            const qtd = parseInt(document.getElementById('qtd_custom').value) || 1;
+            const precoTotalItem = precoUnitario * qtd;
+
+            acaisCustomizados.push({
+                tamanho: tamanho,
+                extras: extrasList,
+                qtd: qtd,
+                precoTotal: precoTotalItem
+            });
+
+            limparFormularioCustom();
+            renderizarListaCustom();
+            calcularTotal();
+        }
+
+        function removerAcaiCustomizado(index) {
+            acaisCustomizados.splice(index, 1);
+            renderizarListaCustom();
+            calcularTotal();
+        }
+
+        function limparFormularioCustom() {
+            const tamanhoRadio = document.querySelector('input[name="tamanho_custom"]:checked');
+            if (tamanhoRadio) tamanhoRadio.checked = false;
+
+            document.querySelectorAll('.extra-item:checked').forEach(item => {
+                item.checked = false;
+            });
+
+            document.getElementById('qtd_custom').value = "1";
+        }
+
+        function renderizarListaCustom() {
+            const container = document.getElementById('lista_custom_container');
+            container.innerHTML = "";
+
+            acaisCustomizados.forEach((item, index) => {
+                const extrasText = item.extras.length > 0 ? item.extras.join(', ') : 'Sem adicionais';
+                const div = document.createElement('div');
+                div.className = 'custom-item-card';
+                div.innerHTML = `
+                    <div class="custom-item-info">
+                        <strong>${item.qtd}x Açaí ${item.tamanho}</strong> - R$ ${item.precoTotal.toFixed(2).replace('.', ',')}<br>
+                        <small style="color: #ccc;">Adicionais: ${extrasText}</small>
+                    </div>
+                    <button type="button" class="btn-remove-item" onclick="removerAcaiCustomizado(${index})">Remover</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
         function calcularTotal() {
             let totalGeral = 0;
 
-            // 1. Monte seu Açaí
-            let totalCustomUnitario = 0;
-            const tamanhoCustom = document.querySelector('input[name="tamanho_custom"]:checked');
-            if (tamanhoCustom) {
-                totalCustomUnitario += parseFloat(tamanhoCustom.getAttribute('data-preco'));
-                
-                const extras = document.querySelectorAll('.extra-item:checked');
-                extras.forEach(item => {
-                    totalCustomUnitario += parseFloat(item.getAttribute('data-preco'));
-                });
-
-                const qtdCustom = parseInt(document.getElementById('qtd_custom').value) || 1;
-                totalGeral += (totalCustomUnitario * qtdCustom);
-            }
+            // 1. Total dos Açaís Customizados
+            acaisCustomizados.forEach(item => {
+                totalGeral += item.precoTotal;
+            });
 
             // 2. Açaís Prontos
             for (let i = 1; i <= 4; i++) {
@@ -689,25 +790,22 @@
 
             const total = calcularTotal();
             if (total === 0) {
-                alert("Por favor, selecione ao menos um produto.");
+                alert("Por favor, adicione ao menos um produto ao pedido.");
                 return;
             }
 
             let resumo = [];
 
-            // Monte seu Açaí
-            const tamanhoCustom = document.querySelector('input[name="tamanho_custom"]:checked');
-            if (tamanhoCustom) {
-                const qtdCustom = document.getElementById('qtd_custom').value;
-                let customDesc = `Açaí Monte seu Açaí (${tamanhoCustom.value}) x${qtdCustom}`;
-                
-                let extrasList = [];
-                document.querySelectorAll('.extra-item:checked').forEach(i => extrasList.push(i.value));
-                if (extrasList.length > 0) {
-                    customDesc += ` [Adicionais: ${extrasList.join(', ')}]`;
+            // Açaís Customizados
+            acaisCustomizados.forEach((item, index) => {
+                let customDesc = `Açaí #${index + 1} Monte seu Açaí (${item.tamanho}) x${item.qtd}`;
+                if (item.extras.length > 0) {
+                    customDesc += ` [Adicionais: ${item.extras.join(', ')}]`;
+                } else {
+                    customDesc += ` [Sem adicionais]`;
                 }
                 resumo.push(customDesc);
-            }
+            });
 
             // Prontos
             for(let i = 1; i <= 4; i++) {
