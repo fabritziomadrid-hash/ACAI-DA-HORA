@@ -182,6 +182,18 @@
             margin-top: 0.5rem;
         }
 
+        .qty-select {
+            width: 100%;
+            padding: 0.4rem;
+            border-radius: 6px;
+            border: 1px solid var(--purple-neon);
+            background: #2A0A33;
+            color: white;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+        }
+
         .form-group {
             margin-bottom: 1rem;
         }
@@ -245,7 +257,6 @@
     </div>
 
     <header>
-        <!-- Espaço para a sua LOGO (Substitua a URL pela imagem da sua marca) -->
         <div class="logo-container">
             <img src="imagens/logoacai.jpeg" alt="Logo Açaí da Hora" class="logo-img">
         </div>
@@ -254,23 +265,6 @@
     </header>
 
     <div class="container">
-
-        <div class="step-box">
-            <div class="step-title" data-i18n="multiplicatorTitle">Multiplicador de Pedido</div>
-            <label for="cantidad" data-i18n="multiplicatorLabel">Quantas vezes deseja repetir esta seleção?</label>
-            <select id="cantidad" class="select-input" onchange="calcularTotal()">
-                <option value="1">x1</option>
-                <option value="2">x2</option>
-                <option value="3">x3</option>
-                <option value="4">x4</option>
-                <option value="5">x5</option>
-                <option value="6">x6</option>
-                <option value="7">x7</option>
-                <option value="8">x8</option>
-                <option value="9">x9</option>
-                <option value="10">x10</option>
-            </select>
-        </div>
 
         <h2 class="section-title" data-i18n="option1Title">Monte seu Açaí</h2>
         
@@ -327,8 +321,19 @@
             <div class="step-title" data-i18n="step4Title">4. Coberturas (2 Opções)</div>
             <div class="options-grid">
                 <label class="option-card"><img src="imagens/coberturamorango.png"><strong data-i18n="itemLeiteCond">Morango</strong><span class="price-tag">+R$ 1,50</span><input type="checkbox" class="extra-item" name="cobertura" value="Cobertura de Morango" data-preco="1.50" onclick="calcularTotal()"></label>
-                <label class="option-card"><img src="imagens/caramelo.png"><strong>Caranelo</strong><span class="price-tag">+R$ 4,00</span><input type="checkbox" class="extra-item" name="cobertura" value="Caramelo" data-preco="4.00" onclick="calcularTotal()"></label>
+                <label class="option-card"><img src="imagens/caramelo.png"><strong>Caramelo</strong><span class="price-tag">+R$ 4,00</span><input type="checkbox" class="extra-item" name="cobertura" value="Caramelo" data-preco="4.00" onclick="calcularTotal()"></label>
             </div>
+        </div>
+
+        <div class="step-box">
+            <div class="step-title">Quantidade para o Açaí Montado</div>
+            <select id="qtd_custom" class="qty-select" onchange="calcularTotal()">
+                <option value="1">Qtd: x1</option>
+                <option value="2">Qtd: x2</option>
+                <option value="3">Qtd: x3</option>
+                <option value="4">Qtd: x4</option>
+                <option value="5">Qtd: x5</option>
+            </select>
         </div>
 
         <h2 class="section-title" data-i18n="option2Title">Opção 2: Açaís Prontos</h2>
@@ -344,6 +349,13 @@
                         <option value="500ml" data-add="5">500ml (R$ 20,00)</option>
                         <option value="700ml" data-add="10">700ml (R$ 25,00)</option>
                     </select>
+                    <select id="qtd_pronto_1" class="qty-select" onchange="calcularTotal()">
+                        <option value="1">Qtd: x1</option>
+                        <option value="2">Qtd: x2</option>
+                        <option value="3">Qtd: x3</option>
+                        <option value="4">Qtd: x4</option>
+                        <option value="5">Qtd: x5</option>
+                    </select>
                 </div>
 
                 <div class="option-card">
@@ -355,6 +367,13 @@
                         <option value="300ml" data-add="0">300ml (R$ 20,00)</option>
                         <option value="500ml" data-add="5">500ml (R$ 25,00)</option>
                         <option value="700ml" data-add="10">700ml (R$ 30,00)</option>
+                    </select>
+                    <select id="qtd_pronto_2" class="qty-select" onchange="calcularTotal()">
+                        <option value="1">Qtd: x1</option>
+                        <option value="2">Qtd: x2</option>
+                        <option value="3">Qtd: x3</option>
+                        <option value="4">Qtd: x4</option>
+                        <option value="5">Qtd: x5</option>
                     </select>
                 </div>
 
@@ -368,6 +387,13 @@
                         <option value="500ml" data-add="5">500ml (R$ 23,00)</option>
                         <option value="700ml" data-add="10">700ml (R$ 28,00)</option>
                     </select>
+                    <select id="qtd_pronto_3" class="qty-select" onchange="calcularTotal()">
+                        <option value="1">Qtd: x1</option>
+                        <option value="2">Qtd: x2</option>
+                        <option value="3">Qtd: x3</option>
+                        <option value="4">Qtd: x4</option>
+                        <option value="5">Qtd: x5</option>
+                    </select>
                 </div>
 
                 <div class="option-card">
@@ -380,6 +406,13 @@
                         <option value="500ml" data-add="5">500ml (R$ 27,00)</option>
                         <option value="700ml" data-add="10">700ml (R$ 32,00)</option>
                     </select>
+                    <select id="qtd_pronto_4" class="qty-select" onchange="calcularTotal()">
+                        <option value="1">Qtd: x1</option>
+                        <option value="2">Qtd: x2</option>
+                        <option value="3">Qtd: x3</option>
+                        <option value="4">Qtd: x4</option>
+                        <option value="5">Qtd: x5</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -387,29 +420,50 @@
         <h2 class="section-title" data-i18n="option3Title">Opção 3: Combos Especiais</h2>
         <div class="step-box">
             <div class="options-grid">
-                <label class="option-card">
+                <div class="option-card">
                     <img src="imagens/comboarcoiris.png" alt="2 Açaís Arco-íris">
                     <strong data-i18n="comboarcoiris.png">2 Açaís Arco-íris</strong>
                     <span data-i18n="comboCasalDesc">2x 300ml com desconto</span>
                     <span class="price-tag">R$ 35,00</span>
-                    <input type="checkbox" class="combo-item" value="2 Açaís Arco-íris" data-preco="35.00" onclick="calcularTotal()">
-                </label>
+                    <label><input type="checkbox" class="combo-item" id="combo_1" value="2 Açaís Arco-íris" data-preco="35.00" onclick="calcularTotal()"> Selecionar</label>
+                    <select id="qtd_combo_1" class="qty-select" onchange="calcularTotal()">
+                        <option value="1">Qtd: x1</option>
+                        <option value="2">Qtd: x2</option>
+                        <option value="3">Qtd: x3</option>
+                        <option value="4">Qtd: x4</option>
+                        <option value="5">Qtd: x5</option>
+                    </select>
+                </div>
 
-                <label class="option-card">
+                <div class="option-card">
                     <img src="https://via.placeholder.com/150?text=Combo+Galera" alt="Combo Galera">
                     <strong data-i18n="comboGalera">Combo Galera</strong>
                     <span data-i18n="comboGaleraDesc">3x 700ml + Barca</span>
                     <span class="price-tag">R$ 65,00</span>
-                    <input type="checkbox" class="combo-item" value="Combo Galera" data-preco="65.00" onclick="calcularTotal()">
-                </label>
+                    <label><input type="checkbox" class="combo-item" id="combo_2" value="Combo Galera" data-preco="65.00" onclick="calcularTotal()"> Selecionar</label>
+                    <select id="qtd_combo_2" class="qty-select" onchange="calcularTotal()">
+                        <option value="1">Qtd: x1</option>
+                        <option value="2">Qtd: x2</option>
+                        <option value="3">Qtd: x3</option>
+                        <option value="4">Qtd: x4</option>
+                        <option value="5">Qtd: x5</option>
+                    </select>
+                </div>
 
-                <label class="option-card">
+                <div class="option-card">
                     <img src="https://via.placeholder.com/150?text=Combo+Kids" alt="Combo Kids">
                     <strong>Combo Kids</strong>
                     <span data-i18n="comboKidsDesc">1x 300ml + Confetti</span>
                     <span class="price-tag">R$ 16,00</span>
-                    <input type="checkbox" class="combo-item" value="Combo Kids" data-preco="16.00" onclick="calcularTotal()">
-                </label>
+                    <label><input type="checkbox" class="combo-item" id="combo_3" value="Combo Kids" data-preco="16.00" onclick="calcularTotal()"> Selecionar</label>
+                    <select id="qtd_combo_3" class="qty-select" onchange="calcularTotal()">
+                        <option value="1">Qtd: x1</option>
+                        <option value="2">Qtd: x2</option>
+                        <option value="3">Qtd: x3</option>
+                        <option value="4">Qtd: x4</option>
+                        <option value="5">Qtd: x5</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -441,15 +495,12 @@
     </div>
 
     <script>
-        const SEU_NUMERO_WHATSAPP = "5541999999999"; // Altere para o seu número do WhatsApp
+        const SEU_NUMERO_WHATSAPP = "5541987026386";
 
-        // Dicionário para Tradução da Interface
         const translations = {
             pt: {
                 selectLanguage: "Idioma / Language:",
                 tagline: "O açaí mais cremoso da cidade!",
-                multiplicatorTitle: "Multiplicador de Pedido",
-                multiplicatorLabel: "Quantas vezes deseja repetir esta seleção?",
                 option1Title: "Opção 1: Monte seu Açaí",
                 step1Title: "1. Escolha o Tamanho",
                 step2Title: "2. Acompanhamentos (9 Opções)",
@@ -458,9 +509,9 @@
                 option2Title: "Opção 2: Açaís Prontos",
                 fromText: "A partir de",
                 optNone: "-- Não adicionar --",
-                pronto1Title: "1. Tradicional",
-                pronto3Title: "3. Tropical",
-                pronto4Title: "4. Power Energético",
+                pronto1Title: "1. Sensação",
+                pronto3Title: "3. Arco-íris",
+                pronto4Title: "4. Banana Crunch",
                 option3Title: "Opção 3: Combos Especiais",
                 comboCasal: "Combo Casal",
                 comboCasalDesc: "2x 500ml + 4 Acomp",
@@ -489,8 +540,6 @@
             es: {
                 selectLanguage: "Idioma / Language:",
                 tagline: "¡El açaí más cremoso de la ciudad!",
-                multiplicatorTitle: "Multiplicador de Pedido",
-                multiplicatorLabel: "¿Cuántas veces quieres repetir esta selección?",
                 option1Title: "Opción 1: Arma tu Açaí",
                 step1Title: "1. Elige el Tamaño",
                 step2Title: "2. Acompañamientos (9 Opciones)",
@@ -500,9 +549,9 @@
                 fromText: "Desde",
                 optNone: "-- No añadir --",
                 pronto1Title: "1. Sensacíón",
-                pronto3Title: "3. Tropical",
-                pronto4Title: "4. Power Energético",
-                option3Title: "Opção 3: Combos Especiales",
+                pronto3Title: "3. Arco-íris",
+                pronto4Title: "4. Banana Crunch",
+                option3Title: "Opción 3: Combos Especiales",
                 comboCasal: "Combo Pareja",
                 comboCasalDesc: "2x 500ml + 4 Acomp",
                 comboGalera: "Combo Amigos",
@@ -530,8 +579,6 @@
             en: {
                 selectLanguage: "Language / Idioma:",
                 tagline: "The creamiest açaí in town!",
-                multiplicatorTitle: "Order Multiplier",
-                multiplicatorLabel: "How many times do you want to repeat this selection?",
                 option1Title: "Option 1: Build Your Açaí",
                 step1Title: "1. Choose Size",
                 step2Title: "2. Toppings (9 Options)",
@@ -541,7 +588,7 @@
                 fromText: "From",
                 optNone: "-- Do not add --",
                 pronto1Title: "1. Sensação",
-                pronto3Title: "3. Tropical",
+                pronto3Title: "3. Rainbow",
                 pronto4Title: "4. Banana Crunch",
                 option3Title: "Option 3: Special Combos",
                 comboCasal: "Couple Combo",
@@ -579,7 +626,6 @@
                 }
             });
 
-            // Atualiza placeholders
             if (translations[lang]) {
                 document.getElementById('nome').placeholder = translations[lang].placeholderName;
                 document.getElementById('endereco').placeholder = translations[lang].placeholderAddress;
@@ -587,49 +633,54 @@
         }
 
         function calcularTotal() {
-            let totalUnitario = 0;
+            let totalGeral = 0;
 
-            // 1. Tamanho Custom
+            // 1. Monte seu Açaí
+            let totalCustomUnitario = 0;
             const tamanhoCustom = document.querySelector('input[name="tamanho_custom"]:checked');
             if (tamanhoCustom) {
-                totalUnitario += parseFloat(tamanhoCustom.getAttribute('data-preco'));
+                totalCustomUnitario += parseFloat(tamanhoCustom.getAttribute('data-preco'));
+                
+                const extras = document.querySelectorAll('.extra-item:checked');
+                extras.forEach(item => {
+                    totalCustomUnitario += parseFloat(item.getAttribute('data-preco'));
+                });
+
+                const qtdCustom = parseInt(document.getElementById('qtd_custom').value) || 1;
+                totalGeral += (totalCustomUnitario * qtdCustom);
             }
 
-            // 2. Acompanhamentos, Frutas e Coberturas
-            const extras = document.querySelectorAll('.extra-item:checked');
-            extras.forEach(item => {
-                totalUnitario += parseFloat(item.getAttribute('data-preco'));
-            });
-
-            // 3. Açaís Prontos
-            const prontos = document.querySelectorAll('.pronto-item');
-            prontos.forEach(select => {
-                if (select.value !== "") {
+            // 2. Açaís Prontos
+            for (let i = 1; i <= 4; i++) {
+                const select = document.getElementById(`pronto_${i}`);
+                if (select && select.value !== "") {
                     const base = parseFloat(select.getAttribute('data-base'));
                     const selectedOption = select.options[select.selectedIndex];
                     const adicional = parseFloat(selectedOption.getAttribute('data-add') || 0);
-                    totalUnitario += (base + adicional);
+                    const qtdPronto = parseInt(document.getElementById(`qtd_pronto_${i}`).value) || 1;
+                    
+                    totalGeral += ((base + adicional) * qtdPronto);
                 }
-            });
+            }
 
-            // 4. Combos
-            const combos = document.querySelectorAll('.combo-item:checked');
-            combos.forEach(item => {
-                totalUnitario += parseFloat(item.getAttribute('data-preco'));
-            });
+            // 3. Combos
+            for (let i = 1; i <= 3; i++) {
+                const checkbox = document.getElementById(`combo_${i}`);
+                if (checkbox && checkbox.checked) {
+                    const precoCombo = parseFloat(checkbox.getAttribute('data-preco'));
+                    const qtdCombo = parseInt(document.getElementById(`qtd_combo_${i}`).value) || 1;
+                    
+                    totalGeral += (precoCombo * qtdCombo);
+                }
+            }
 
-            // Multiplicador
-            const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
-            const totalFinal = totalUnitario * cantidad;
-
-            document.getElementById('totalValue').innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
-            return totalFinal;
+            document.getElementById('totalValue').innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+            return totalGeral;
         }
 
         function enviarPedido() {
             const nome = document.getElementById('nome').value;
             const endereco = document.getElementById('endereco').value;
-            const cantidad = document.getElementById('cantidad').value;
 
             if (!nome || !endereco) {
                 alert("Por favor, preencha seu nome e endereço.");
@@ -644,37 +695,47 @@
 
             let resumo = [];
 
-            // Tamanho Custom
+            // Monte seu Açaí
             const tamanhoCustom = document.querySelector('input[name="tamanho_custom"]:checked');
             if (tamanhoCustom) {
-                resumo.push(`Açaí Custom: ${tamanhoCustom.value}`);
+                const qtdCustom = document.getElementById('qtd_custom').value;
+                let customDesc = `Açaí Monte seu Açaí (${tamanhoCustom.value}) x${qtdCustom}`;
+                
+                let extrasList = [];
+                document.querySelectorAll('.extra-item:checked').forEach(i => extrasList.push(i.value));
+                if (extrasList.length > 0) {
+                    customDesc += ` [Adicionais: ${extrasList.join(', ')}]`;
+                }
+                resumo.push(customDesc);
             }
-
-            // Extras
-            document.querySelectorAll('.extra-item:checked').forEach(i => resumo.push(`Extra: ${i.value}`));
 
             // Prontos
             for(let i = 1; i <= 4; i++) {
                 const select = document.getElementById(`pronto_${i}`);
                 if(select && select.value !== "") {
                     const nomeItem = select.parentElement.querySelector('strong').innerText;
-                    resumo.push(`${nomeItem} (${select.value})`);
+                    const qtd = document.getElementById(`qtd_pronto_${i}`).value;
+                    resumo.push(`${nomeItem} (${select.value}) x${qtd}`);
                 }
             }
 
             // Combos
-            document.querySelectorAll('.combo-item:checked').forEach(i => resumo.push(`Combo: ${i.value}`));
+            for(let i = 1; i <= 3; i++) {
+                const checkbox = document.getElementById(`combo_${i}`);
+                if(checkbox && checkbox.checked) {
+                    const qtd = document.getElementById(`qtd_combo_${i}`).value;
+                    resumo.push(`Combo: ${checkbox.value} x${qtd}`);
+                }
+            }
 
-            // Formatação do WhatsApp (Mantida em Português para o atendente)
             let mensagem = `*PEDIDO AÇAÍ DA HORA* 🍇%0A%0A`;
-            mensagem += `*Multiplicador:* x${cantidad}%0A`;
             mensagem += `*Cliente:* ${nome}%0A`;
             mensagem += `*Endereço:* ${endereco}%0A`;
             mensagem += `*Pagamento:* PIX ❖%0A%0A`;
             mensagem += `*Detalhes do Pedido:*%0A- ${resumo.join('%0A- ')}%0A%0A`;
             mensagem += `*TOTAL A PAGAR:* R$ ${total.toFixed(2).replace('.', ',')}`;
 
-            const url = `https://wa.me/${5541987026386}?text=${mensagem}`;
+            const url = `https://wa.me/${SEU_NUMERO_WHATSAPP}?text=${mensagem}`;
             window.open(url, '_blank');
         }
     </script>
