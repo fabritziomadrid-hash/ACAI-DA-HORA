@@ -335,7 +335,6 @@
                     <span class="price-tag">R$ 27,00</span>
                     <input type="radio" name="tamanho_custom" value="700ml" data-preco="27.00">
                 </label>
-                <!-- CORREÇÃO DA IMAGEM E SINTAXE DO AÇAÍ NA MARMITA -->
                 <label class="option-card">
                     <img src="imagens/acainamarmita.png" alt="Açaí na marmita">
                     <strong>Açaí na marmita</strong>
@@ -674,6 +673,169 @@
                     el.innerText = translations[lang][key];
                 }
             });
+        }
+
+        function adicionarAcaiCustomizado() {
+            const tamanhoElem = document.querySelector('input[name="tamanho_custom"]:checked');
+            if (!tamanhoElem) {
+                alert("Por favor, selecione um tamanho para o açaí!");
+                return;
+            }
+
+            const tamanho = tamanhoElem.value;
+            const precoTamanho = parseFloat(tamanhoElem.getAttribute('data-preco'));
+            const qtd = parseInt(document.getElementById('qtd_custom').value);
+
+            let extras = [];
+            let precoExtras = 0;
+
+            const extrasElems = document.querySelectorAll('.extra-item:checked');
+            extrasElems.forEach(item => {
+                extras.push(item.value);
+                precoExtras += parseFloat(item.getAttribute('data-preco'));
+            });
+
+            const precoUnitario = precoTamanho + precoExtras;
+            const precoTotalItem = precoUnitario * qtd;
+
+            acaisCustomizados.push({
+                tamanho: tamanho,
+                extras: extras,
+                qtd: qtd,
+                precoTotal: precoTotalItem
+            });
+
+            // Reseta as seleções do monte seu açaí
+            tamanhoElem.checked = false;
+            extrasElems.forEach(item => item.checked = false);
+            document.getElementById('qtd_custom').value = "1";
+
+            atualizarListaCustomizados();
+            calcularTotal();
+        }
+
+        function removerAcaiCustomizado(index) {
+            acaisCustomizados.splice(index, 1);
+            atualizarListaCustomizados();
+            calcularTotal();
+        }
+
+        function atualizarListaCustomizados() {
+            const container = document.getElementById('lista_custom_container');
+            container.innerHTML = "";
+
+            acaisCustomizados.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "custom-item-card";
+                const extrasTexto = item.extras.length > 0 ? item.extras.join(", ") : "Sem adicionais";
+                div.innerHTML = `
+                    <div class="custom-item-info">
+                        <strong>${item.qtd}x Açaí ${item.tamanho}</strong><br>
+                        <small>Adicionais: ${extrasTexto}</small><br>
+                        <span style="color: var(--yellow-bright); font-weight: bold;">R$ ${item.precoTotal.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <button type="button" class="btn-remove-item" onclick="removerAcaiCustomizado(${index})">Remover</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function calcularTotal() {
+            let total = 0;
+
+            // Total dos customizados
+            acaisCustomizados.forEach(item => {
+                total += item.precoTotal;
+            });
+
+            // Açaís prontos
+            const prontos = document.querySelectorAll('.pronto-item');
+            prontos.forEach(item => {
+                if (item.value !== "") {
+                    const base = parseFloat(item.getAttribute('data-base'));
+                    const optionSelected = item.options[item.selectedIndex];
+                    const add = parseFloat(optionSelected.getAttribute('data-add') || 0);
+                    const idQtd = "qtd_" + item.id;
+                    const qtd = parseInt(document.getElementById(idQtd).value);
+                    total += (base + add) * qtd;
+                }
+            });
+
+            // Combos
+            const combos = document.querySelectorAll('.combo-item:checked');
+            combos.forEach(item => {
+                const preco = parseFloat(item.getAttribute('data-preco'));
+                const idQtd = "qtd_" + item.id;
+                const qtd = parseInt(document.getElementById(idQtd).value);
+                total += preco * qtd;
+            });
+
+            document.getElementById('totalValue').innerText = "R$ " + total.toFixed(2).replace('.', ',');
+            return total;
+        }
+
+        function enviarPedido() {
+            const total = calcularTotal();
+            if (total === 0) {
+                alert("Por favor, selecione ao menos um item para realizar o pedido.");
+                return;
+            }
+
+            const nome = document.getElementById('nome').value.trim();
+            const endereco = document.getElementById('endereco').value.trim();
+
+            if (!nome || !endereco) {
+                alert("Por favor, preencha seu nome e endereço de entrega.");
+                return;
+            }
+
+            let mensagem = `*NOVO PEDIDO - AÇAÍ DA HORA*\n\n`;
+            mensagem += `*Cliente:* ${nome}\n`;
+            mensagem += `*Endereço:* ${endereco}\n\n`;
+            mensagem += `*ITENS DO PEDIDO:*\n`;
+
+            if (acaisCustomizados.length > 0) {
+                mensagem += `\n--- Açaís Montados ---\n`;
+                acaisCustomizados.forEach((item, i) => {
+                    mensagem += `${item.qtd}x Açaí ${item.tamanho}\n`;
+                    if (item.extras.length > 0) {
+                        mensagem += `   Adicionais: ${item.extras.join(', ')}\n`;
+                    }
+                    mensagem += `   Valor: R$ ${item.precoTotal.toFixed(2).replace('.', ',')}\n`;
+                });
+            }
+
+            const prontos = document.querySelectorAll('.pronto-item');
+            let temPronto = false;
+            prontos.forEach(item => {
+                if (item.value !== "") {
+                    if (!temPronto) {
+                        mensagem += `\n--- Açaís Prontos ---\n`;
+                        temPronto = true;
+                    }
+                    const parent = item.closest('.option-card');
+                    const nomePronto = parent.querySelector('strong').innerText;
+                    const idQtd = "qtd_" + item.id;
+                    const qtd = document.getElementById(idQtd).value;
+                    mensagem += `${qtd}x ${nomePronto} (${item.value})\n`;
+                }
+            });
+
+            const combos = document.querySelectorAll('.combo-item:checked');
+            if (combos.length > 0) {
+                mensagem += `\n--- Combos ---\n`;
+                combos.forEach(item => {
+                    const idQtd = "qtd_" + item.id;
+                    const qtd = document.getElementById(idQtd).value;
+                    mensagem += `${qtd}x ${item.value}\n`;
+                });
+            }
+
+            mensagem += `\n*Forma de Pagamento:* PIX\n`;
+            mensagem += `*TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            const url = `https://wa.me/${SEU_NUMERO_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, '_blank');
         }
     </script>
 </body>
