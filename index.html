@@ -725,7 +725,7 @@
         document.addEventListener('click', function() {
             const audio = document.getElementById('bg-music');
             if (audio && audio.paused) {
-                audio.volume = 0.3; // Define o volume inicial baixo
+                audio.volume = 0.1; // Define o volume inicial baixo
                 audio.play().catch(e => console.log("Tocador aguardando interação."));
             }
         }, { once: true });
