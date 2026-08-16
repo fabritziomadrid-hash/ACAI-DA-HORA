@@ -206,7 +206,6 @@
             margin-top: 0.5rem;
         }
 
-        /* Botão para adicionar açaí montado */
         .btn-add-custom {
             background: var(--yellow-bright);
             color: #000;
@@ -225,7 +224,6 @@
             background: #e6c200;
         }
 
-        /* Lista de Açaís Montados */
         .custom-list {
             margin-top: 1rem;
             display: flex;
@@ -337,6 +335,13 @@
                     <span class="price-tag">R$ 27,00</span>
                     <input type="radio" name="tamanho_custom" value="700ml" data-preco="27.00">
                 </label>
+                <!-- NOVA OPÇÃO ADICIONADA -->
+                <label class="option-card">
+                    <img src="imagens/marmita.png" alt="Açaí na marmita">
+                    <strong>Açaí na marmita</strong>
+                    <span class="price-tag">R$ 35,00</span>
+                    <input type="radio" name="tamanho_custom" value="Açaí na marmita" data-preco="35.00">
+                </label>
             </div>
         </div>
 
@@ -362,7 +367,7 @@
                 <label class="option-card"><img src="imagens/morango.png"><strong data-i18n="itemMorango">Morango</strong><span class="price-tag">+R$ 4,50</span><input type="checkbox" class="extra-item" name="fruta" value="Morango" data-preco="4.50"></label>
                 <label class="option-card"><img src="imagens/uva.png"><strong data-i18n="itemUva">Uva</strong><span class="price-tag">+R$ 3,10</span><input type="checkbox" class="extra-item" name="fruta" value="Uva" data-preco="3.10"></label>
                 <label class="option-card"><img src="imagens/abacaxi.png"><strong>Abacaxi</strong><span class="price-tag">+R$ 3,50</span><input type="checkbox" class="extra-item" name="fruta" value="Abacaxi" data-preco="3.50"></label>
-            </div
+            </div>
         </div>
 
         <div class="step-box">
@@ -669,172 +674,6 @@
                     el.innerText = translations[lang][key];
                 }
             });
-
-            if (translations[lang]) {
-                document.getElementById('nome').placeholder = translations[lang].placeholderName;
-                document.getElementById('endereco').placeholder = translations[lang].placeholderAddress;
-            }
-        }
-
-        function adicionarAcaiCustomizado() {
-            const tamanhoRadio = document.querySelector('input[name="tamanho_custom"]:checked');
-            if (!tamanhoRadio) {
-                alert("Selecione o tamanho do Açaí!");
-                return;
-            }
-
-            const tamanho = tamanhoRadio.value;
-            let precoUnitario = parseFloat(tamanhoRadio.getAttribute('data-preco'));
-            const extrasList = [];
-
-            document.querySelectorAll('.extra-item:checked').forEach(item => {
-                extrasList.push(item.value);
-                precoUnitario += parseFloat(item.getAttribute('data-preco'));
-            });
-
-            const qtd = parseInt(document.getElementById('qtd_custom').value) || 1;
-            const precoTotalItem = precoUnitario * qtd;
-
-            acaisCustomizados.push({
-                tamanho: tamanho,
-                extras: extrasList,
-                qtd: qtd,
-                precoTotal: precoTotalItem
-            });
-
-            limparFormularioCustom();
-            renderizarListaCustom();
-            calcularTotal();
-        }
-
-        function removerAcaiCustomizado(index) {
-            acaisCustomizados.splice(index, 1);
-            renderizarListaCustom();
-            calcularTotal();
-        }
-
-        function limparFormularioCustom() {
-            const tamanhoRadio = document.querySelector('input[name="tamanho_custom"]:checked');
-            if (tamanhoRadio) tamanhoRadio.checked = false;
-
-            document.querySelectorAll('.extra-item:checked').forEach(item => {
-                item.checked = false;
-            });
-
-            document.getElementById('qtd_custom').value = "1";
-        }
-
-        function renderizarListaCustom() {
-            const container = document.getElementById('lista_custom_container');
-            container.innerHTML = "";
-
-            acaisCustomizados.forEach((item, index) => {
-                const extrasText = item.extras.length > 0 ? item.extras.join(', ') : 'Sem adicionais';
-                const div = document.createElement('div');
-                div.className = 'custom-item-card';
-                div.innerHTML = `
-                    <div class="custom-item-info">
-                        <strong>${item.qtd}x Açaí ${item.tamanho}</strong> - R$ ${item.precoTotal.toFixed(2).replace('.', ',')}<br>
-                        <small style="color: #ccc;">Adicionais: ${extrasText}</small>
-                    </div>
-                    <button type="button" class="btn-remove-item" onclick="removerAcaiCustomizado(${index})">Remover</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function calcularTotal() {
-            let totalGeral = 0;
-
-            // 1. Total dos Açaís Customizados
-            acaisCustomizados.forEach(item => {
-                totalGeral += item.precoTotal;
-            });
-
-            // 2. Açaís Prontos
-            for (let i = 1; i <= 4; i++) {
-                const select = document.getElementById(`pronto_${i}`);
-                if (select && select.value !== "") {
-                    const base = parseFloat(select.getAttribute('data-base'));
-                    const selectedOption = select.options[select.selectedIndex];
-                    const adicional = parseFloat(selectedOption.getAttribute('data-add') || 0);
-                    const qtdPronto = parseInt(document.getElementById(`qtd_pronto_${i}`).value) || 1;
-                    
-                    totalGeral += ((base + adicional) * qtdPronto);
-                }
-            }
-
-            // 3. Combos
-            for (let i = 1; i <= 3; i++) {
-                const checkbox = document.getElementById(`combo_${i}`);
-                if (checkbox && checkbox.checked) {
-                    const precoCombo = parseFloat(checkbox.getAttribute('data-preco'));
-                    const qtdCombo = parseInt(document.getElementById(`qtd_combo_${i}`).value) || 1;
-                    
-                    totalGeral += (precoCombo * qtdCombo);
-                }
-            }
-
-            document.getElementById('totalValue').innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
-            return totalGeral;
-        }
-
-        function enviarPedido() {
-            const nome = document.getElementById('nome').value;
-            const endereco = document.getElementById('endereco').value;
-
-            if (!nome || !endereco) {
-                alert("Por favor, preencha seu nome e endereço.");
-                return;
-            }
-
-            const total = calcularTotal();
-            if (total === 0) {
-                alert("Por favor, adicione ao menos um produto ao pedido.");
-                return;
-            }
-
-            let resumo = [];
-
-            // Açaís Customizados
-            acaisCustomizados.forEach((item, index) => {
-                let customDesc = `Açaí #${index + 1} Monte seu Açaí (${item.tamanho}) x${item.qtd}`;
-                if (item.extras.length > 0) {
-                    customDesc += ` [Adicionais: ${item.extras.join(', ')}]`;
-                } else {
-                    customDesc += ` [Sem adicionais]`;
-                }
-                resumo.push(customDesc);
-            });
-
-            // Prontos
-            for(let i = 1; i <= 4; i++) {
-                const select = document.getElementById(`pronto_${i}`);
-                if(select && select.value !== "") {
-                    const nomeItem = select.parentElement.querySelector('strong').innerText;
-                    const qtd = document.getElementById(`qtd_pronto_${i}`).value;
-                    resumo.push(`${nomeItem} (${select.value}) x${qtd}`);
-                }
-            }
-
-            // Combos
-            for(let i = 1; i <= 3; i++) {
-                const checkbox = document.getElementById(`combo_${i}`);
-                if(checkbox && checkbox.checked) {
-                    const qtd = document.getElementById(`qtd_combo_${i}`).value;
-                    resumo.push(`Combo: ${checkbox.value} x${qtd}`);
-                }
-            }
-
-            let mensagem = `*PEDIDO AÇAÍ DA HORA* 🍇%0A%0A`;
-            mensagem += `*Cliente:* ${nome}%0A`;
-            mensagem += `*Endereço:* ${endereco}%0A`;
-            mensagem += `*Pagamento:* PIX ❖%0A%0A`;
-            mensagem += `*Detalhes do Pedido:*%0A- ${resumo.join('%0A- ')}%0A%0A`;
-            mensagem += `*TOTAL A PAGAR:* R$ ${total.toFixed(2).replace('.', ',')}`;
-
-            const url = `https://wa.me/${SEU_NUMERO_WHATSAPP}?text=${mensagem}`;
-            window.open(url, '_blank');
         }
     </script>
 </body>
