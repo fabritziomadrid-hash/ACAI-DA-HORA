@@ -1024,7 +1024,187 @@
             window.open(`https://wa.me/${SEU_NUMERO_WHATSAPP}?text=${encoded}`, '_blank');
         }
 
-        <!-- Estilo do Rodapé -->
+     // Função para fechar o modal clicando fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalDetalhes');
+            if (event.target === modal) {
+                fecharModal();
+            }
+        };
+
+        // Função para calcular o valor total do pedido
+        function calcularTotal() {
+            let total = 0;
+
+            // Total dos Açaís Customizados
+            acaisCustomizados.forEach(item => {
+                total += item.precoTotal;
+            });
+
+            // Total dos Açaís Prontos
+            const prontos = document.querySelectorAll('.pronto-item');
+            prontos.forEach(select => {
+                if (select.value) {
+                    const precoBase = parseFloat(select.dataset.base);
+                    const precoAdd = parseFloat(select.options[select.selectedIndex].dataset.add);
+                    const qtdId = 'qtd_' + select.id;
+                    const qtd = parseInt(document.getElementById(qtdId).value);
+                    total += (precoBase + precoAdd) * qtd;
+                }
+            });
+
+            // Total dos Combos
+            const combos = document.querySelectorAll('.combo-item');
+            combos.forEach(select => {
+                if (select.value) {
+                    const preco = parseFloat(select.options[select.selectedIndex].dataset.preco);
+                    const qtdId = 'qtd_' + select.id;
+                    const qtd = parseInt(document.getElementById(qtdId).value);
+                    total += preco * qtd;
+                }
+            });
+
+            document.getElementById('totalValue').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Adicionar Açaí Customizado
+        function adicionarAcaiCustomizado() {
+            const tamanhoRadio = document.querySelector('input[name="tamanho_custom"]:checked');
+            if (!tamanhoRadio) {
+                alert('Por favor, escolha o tamanho do seu açaí monte do seu jeito.');
+                return;
+            }
+
+            const tamanho = tamanhoRadio.value;
+            let precoUnitario = parseFloat(tamanhoRadio.dataset.preco);
+            const acompSelecionados = [];
+
+            const checkboxes = document.querySelectorAll('.extra-item:checked');
+            checkboxes.forEach(cb => {
+                acompSelecionados.push(cb.value);
+                precoUnitario += parseFloat(cb.dataset.preco);
+            });
+
+            const qtd = parseInt(document.getElementById('qtd_custom').value);
+            const precoTotal = precoUnitario * qtd;
+
+            acaisCustomizados.push({
+                tamanho,
+                acompanhamentos: acompSelecionados,
+                quantidade: qtd,
+                precoTotal
+            });
+
+            // Limpar seleções após adicionar
+            tamanhoRadio.checked = false;
+            checkboxes.forEach(cb => cb.checked = false);
+            document.getElementById('qtd_custom').value = '1';
+
+            renderizarCustomizados();
+            calcularTotal();
+        }
+
+        function renderizarCustomizados() {
+            const container = document.getElementById('lista_custom_container');
+            container.innerHTML = '';
+
+            acaisCustomizados.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.style.background = 'rgba(255, 255, 255, 0.05)';
+                itemDiv.style.padding = '0.8rem';
+                itemDiv.style.borderRadius = '8px';
+                itemDiv.style.display = 'flex';
+                itemDiv.style.justifyContent = 'space-between';
+                itemDiv.style.alignItems = 'center';
+
+                const acompTexto = item.acompanhamentos.length > 0 ? item.acompanhamentos.join(', ') : 'Sem adicionais';
+                
+                itemDiv.innerHTML = `
+                    <div>
+                        <strong>${item.quantidade}x Açaí Monte do Seu Jeito (${item.tamanho})</strong><br>
+                        <small style="color: #ccc;">Adicionais: ${acompTexto}</small><br>
+                        <span style="color: var(--yellow-bright);">R$ ${item.precoTotal.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <button onclick="removerCustomizado(${index})" style="background: #ff4444; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer;">X</button>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        function removerCustomizado(index) {
+            acaisCustomizados.splice(index, 1);
+            renderizarCustomizados();
+            calcularTotal();
+        }
+
+        // Função para enviar o pedido via WhatsApp
+        function enviarPedido() {
+            const nome = document.getElementById('nome').value.trim();
+            const endereco = document.getElementById('endereco').value.trim();
+
+            if (!nome || !endereco) {
+                alert('Por favor, preencha seu nome e endereço de entrega.');
+                return;
+            }
+
+            let mensagem = `*NOVO PEDIDO - AÇAÍ DA HORA* 🍇\n\n`;
+            mensagem += `*Cliente:* ${nome}\n`;
+            mensagem += `*Endereço:* ${endereco}\n`;
+            mensagem += `-----------------------------------\n\n`;
+
+            let temItens = false;
+
+            // Adiciona customizados
+            if (acaisCustomizados.length > 0) {
+                temItens = true;
+                mensagem += `*AÇAÍ MONTE DO SEU JEITO:*\n`;
+                acaisCustomizados.forEach((item, i) => {
+                    mensagem += `${i + 1}. Qtd: ${item.quantidade}x (${item.tamanho})\n`;
+                    if (item.acompanhamentos.length > 0) {
+                        mensagem += `   Adicionais: ${item.acompanhamentos.join(', ')}\n`;
+                    }
+                    mensagem += `   Valor: R$ ${item.precoTotal.toFixed(2).replace('.', ',')}\n\n`;
+                });
+            }
+
+            // Adiciona prontos
+            const prontos = document.querySelectorAll('.pronto-item');
+            prontos.forEach((select, index) => {
+                if (select.value) {
+                    temItens = true;
+                    const nomePronto = select.previousElementSibling.previousElementSibling.innerText;
+                    const qtd = document.getElementById('qtd_' + select.id).value;
+                    mensagem += `*Açaí Pronto:* ${nomePronto}\n- Tamanho: ${select.value} | Qtd: ${qtd}x\n\n`;
+                }
+            });
+
+            // Adiciona combos
+            const combos = document.querySelectorAll('.combo-item');
+            combos.forEach(select => {
+                if (select.value) {
+                    temItens = true;
+                    const nomeCombo = select.dataset.nome;
+                    const qtd = document.getElementById('qtd_' + select.id).value;
+                    mensagem += `*Combo:* ${nomeCombo}\n- Opção: ${select.value} | Qtd: ${qtd}x\n\n`;
+                }
+            });
+
+            if (!temItens) {
+                alert('Selecione pelo menos um açaí para realizar o pedido.');
+                return;
+            }
+
+            const totalTexto = document.getElementById('totalValue').innerText;
+            mensagem += `-----------------------------------\n`;
+            mensagem += `*TOTAL DO PEDIDO:* ${totalTexto}\n`;
+            mensagem += `*Pagamento:* Pix na entrega/retirada`;
+
+            const url = `https://wa.me/${SEU_NUMERO_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+
+    <!-- Estilo do Rodapé -->
     <style>
         .site-footer {
             background-color: #0b010e;
@@ -1065,8 +1245,5 @@
         <p class="footer-credits">Hospedado via <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a></p>
     </footer>
 
-</body>
-</html>
-    </script>
 </body>
 </html>
