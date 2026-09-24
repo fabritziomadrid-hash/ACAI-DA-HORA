@@ -255,7 +255,6 @@ async function salvarPedidoNoBanco(pedido) {
         method: 'POST',
         headers: {
             apikey: config.supabaseAnonKey,
-            Authorization: `Bearer ${config.supabaseAnonKey}`,
             'Content-Type': 'application/json',
             Prefer: 'return=minimal'
         },
