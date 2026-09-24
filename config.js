@@ -4,9 +4,9 @@
  */
 const LOJA_CONFIG = Object.freeze({
   whatsapp: "5541987026386", // DDI + DDD + número, somente dígitos
-  storeAddress: "PREENCHA AQUI O ENDEREÇO COMPLETO DA LOJA",
-  storeMapUrl: "https://maps.google.com/",
-  instagramUrl: "https://www.instagram.com/SEU_USUARIO/",
+  storeAddress: "Rua Mário Gasparin, 1042 - Sítio Cercado, Curitiba ",
+  storeMapUrl: "https://maps.app.goo.gl/JWHzdoPEsV7i5Xjd9",
+  instagramUrl: "https://www.instagram.com/@ACAIDAH.ORA/",
   supabaseUrl: "", // Ex.: https://SEU-PROJETO.supabase.co
   supabaseAnonKey: "", // Chave pública (anon/publishable), nunca service_role
   databaseTable: "pedidos"
