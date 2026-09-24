@@ -192,10 +192,11 @@ function renderizarAcaisCustomizados() {
 
 function coletarItensPedido() {
     const itens = [];
-    acaisCustomizados.forEach((item) => itens.push({
+    acaisCustomizados.forEach((item, customIndex) => itens.push({
         tipo: 'montado', nome: `Açaí montado ${item.tamanho}`, tamanho: item.tamanho,
         adicionais: item.adicionais, quantidade: item.quantidade,
-        unit_price_cents: item.unitCents, subtotal_cents: item.unitCents * item.quantidade
+        unit_price_cents: item.unitCents, subtotal_cents: item.unitCents * item.quantidade,
+        custom_index: customIndex
     }));
     document.querySelectorAll('.pronto-item').forEach((select) => {
         if (!select.value) return;
@@ -203,7 +204,7 @@ function coletarItensPedido() {
         const unit = dinheiroParaCentavos(select.dataset.base) + dinheiroParaCentavos(chosen.dataset.add);
         const quantity = quantidadeDoItem(select.id);
         const title = select.closest('.option-card').querySelector('strong').innerText.trim();
-        itens.push({ tipo: 'pronto', nome: title, tamanho: select.value, quantidade: quantity,
+        itens.push({ tipo: 'pronto', nome: title, tamanho: select.value, quantidade: quantity, source_id: select.id,
             unit_price_cents: unit, subtotal_cents: unit * quantity });
     });
     document.querySelectorAll('.combo-item').forEach((select) => {
@@ -211,15 +212,66 @@ function coletarItensPedido() {
         const chosen = select.options[select.selectedIndex];
         const unit = dinheiroParaCentavos(chosen.dataset.preco);
         const quantity = quantidadeDoItem(select.id);
-        itens.push({ tipo: 'combo', nome: select.dataset.nome, opcao: select.value, quantidade,
+        itens.push({ tipo: 'combo', nome: select.dataset.nome, opcao: select.value, quantidade: quantity, source_id: select.id,
             unit_price_cents: unit, subtotal_cents: unit * quantity });
     });
     return itens;
 }
 function calcularTotal() {
-    const total = coletarItensPedido().reduce((sum, item) => sum + item.subtotal_cents, 0);
+    const itens = coletarItensPedido();
+    renderizarCarrinho(itens);
+    const total = itens.reduce((sum, item) => sum + item.subtotal_cents, 0);
     document.getElementById('totalValue').innerText = formatarReais(total);
     return total;
+}
+
+function renderizarCarrinho(itens = coletarItensPedido()) {
+    const container = document.getElementById('cartItems');
+    if (!container) return;
+    container.replaceChildren();
+    if (itens.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'cart-empty-message';
+        empty.textContent = 'Seu carrinho está vazio. Selecione um açaí ou combo.';
+        container.appendChild(empty);
+        return;
+    }
+    itens.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'cart-item-row';
+        const info = document.createElement('div');
+        info.className = 'cart-item-info';
+        const title = document.createElement('strong');
+        const option = item.tamanho || item.opcao;
+        title.textContent = `${item.quantidade}x ${item.nome}${option ? ` (${option})` : ''}`;
+        const price = document.createElement('span');
+        price.className = 'cart-item-price';
+        price.textContent = formatarReais(item.subtotal_cents);
+        info.append(title, price);
+        if (item.adicionais?.length) {
+            const extras = document.createElement('small');
+            extras.textContent = `Adicionais: ${item.adicionais.join(', ')}`;
+            info.appendChild(extras);
+        }
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn-remove-item';
+        remove.textContent = 'Remover';
+        remove.setAttribute('aria-label', `Remover ${item.nome} do pedido`);
+        remove.addEventListener('click', () => {
+            if (item.tipo === 'montado') {
+                removerAcaiCustomizado(item.custom_index);
+                return;
+            }
+            const select = document.getElementById(item.source_id);
+            if (select) select.value = '';
+            const quantity = document.getElementById(`qtd_${item.source_id}`);
+            if (quantity) quantity.value = '1';
+            calcularTotal();
+        });
+        row.append(info, remove);
+        container.appendChild(row);
+    });
 }
 
 function atualizarFormaRecebimento() {
@@ -321,4 +373,5 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarFormaRecebimento();
     document.querySelectorAll('.pronto-item, .combo-item, [id^="qtd_pronto_"], [id^="qtd_combo_"]').forEach((field) => field.addEventListener('change', calcularTotal));
     document.querySelectorAll('input[name="tamanho_custom"], .extra-item').forEach((field) => field.addEventListener('change', calcularTotal));
+    calcularTotal();
 });
