@@ -1,377 +1,395 @@
-/* Açaí da Hora — carrinho, checkout, ajuda e gravação opcional no Supabase. */
-let acaisCustomizados = [];
-
-const translations = {
-            pt: {
-                selectLanguage: "Idioma / Language:",
-                tagline: "O açaí mais cremoso da cidade!",
-                option1Title: "Opção 1: Monte seu Açaí",
-                step1Title: "1. Escolha o Tamanho",
-                step2Title: "2. Acompanhamentos (9 Opções)",
-                step3Title: "3. Frutas (4 Opções)",
-                step4Title: "4. Coberturas (2 Opções)",
-                option2Title: "Opção 2: Açaís Prontos",
-                fromText: "A partir de",
-                optNone: "-- Não adicionar --",
-                pronto1Title: "1. Sensação",
-                pronto3Title: "3. Arco-íris",
-                pronto4Title: "4. Banana Crunch",
-                option3Title: "Opção 3: Combos Especiais",
-                comboCasalDesc: "2 Unidades com desconto",
-                comboGalera: "2 Açaís Moranguinho",
-                comboGaleraDesc: "2 Unidades com desconto",
-                comboKidsDesc: "2 Unidades com desconto",
-                checkoutTitle: "Finalizar Pedido",
-                labelName: "Seu Nome:",
-                placeholderName: "Digite seu nome",
-                labelAddress: "Endereço de Entrega:",
-                placeholderAddress: "Rua, Número, Bairro",
-                labelPayment: "Forma de Pagamento:",
-                pixBadge: "❖ PAGAMENTO ÚNICO VIA PIX",
-                totalText: "Total:",
-                btnOrder: "Enviar Pedido 🚀",
-                itemLeitePo: "Leite em Pó",
-                itemFarofa: "Farofa de amendoim",
-                itemCoco: "Chocoball",
-                itemBanana: "Banana",
-                itemMorango: "Morango",
-                itemUva: "Uva",
-                itemLeiteCond: "Morango"
-            },
-            es: {
-                selectLanguage: "Idioma / Language:",
-                tagline: "¡El açaí más cremoso de la ciudad!",
-                option1Title: "Opción 1: Arma tu Açaí",
-                step1Title: "1. Elige el Tamaño",
-                step2Title: "2. Acompañamientos (9 Opciones)",
-                step3Title: "3. Frutas (4 Opciones)",
-                step4Title: "4. Coberturas (2 Opciones)",
-                option2Title: "Opción 2: Açaís Listos",
-                fromText: "Desde",
-                optNone: "-- No añadir --",
-                pronto1Title: "1. Sensacíón",
-                pronto3Title: "3. Arco-íris",
-                pronto4Title: "4. Banana Crunch",
-                option3Title: "Opción 3: Combos Especiales",
-                comboCasalDesc: "2 Unidades con descuento",
-                comboGalera: "2 Açaís Moranguinho",
-                comboGaleraDesc: "2 Unidades con descuento",
-                comboKidsDesc: "2 Unidades con descuento",
-                checkoutTitle: "Finalizar Pedido",
-                labelName: "Tu Nombre:",
-                placeholderName: "Escribe tu nombre",
-                labelAddress: "Dirección de Entrega:",
-                placeholderAddress: "Calle, Número, Barrio",
-                labelPayment: "Método de Pago:",
-                pixBadge: "❖ PAGO ÚNICO VÍA PIX",
-                totalText: "Total:",
-                btnOrder: "Enviar Pedido 🚀",
-                itemLeitePo: "Leche en Polvo",
-                itemFarofa: "Cacahuate molido",
-                itemCoco: "Chocoball",
-                itemBanana: "Banana",
-                itemMorango: "Fresa",
-                itemUva: "Uva",
-                itemLeiteCond: "Fresa"
-            },
-            en: {
-                selectLanguage: "Language / Idioma:",
-                tagline: "The creamiest açaí in town!",
-                option1Title: "Option 1: Build Your Açaí",
-                step1Title: "1. Choose Size",
-                step2Title: "2. Toppings (9 Options)",
-                step3Title: "3. Fruits (4 Options)",
-                step4Title: "4. Syrups & Sauces (2 Options)",
-                option2Title: "Option 2: Ready-Made Açaí",
-                fromText: "From",
-                optNone: "-- Do not add --",
-                pronto1Title: "1. Sensação",
-                pronto3Title: "3. Rainbow",
-                pronto4Title: "4. Banana Crunch",
-                option3Title: "Option 3: Special Combos",
-                comboCasalDesc: "2 Units with discount",
-                comboGalera: "2 Açaís Moranguinho",
-                comboGaleraDesc: "2 Units with discount",
-                comboKidsDesc: "2 Units with discount",
-                checkoutTitle: "Checkout",
-                labelName: "Your Name:",
-                placeholderName: "Enter your name",
-                labelAddress: "Delivery Address:",
-                placeholderAddress: "Street, Number, Neighborhood",
-                labelPayment: "Payment Method:",
-                pixBadge: "❖ SINGLE PAYMENT VIA PIX",
-                totalText: "Total:",
-                btnOrder: "Send Order 🚀",
-                itemLeitePo: "Milk Powder",
-                itemFarofa: "Peanut Powder",
-                itemCoco: "Chocoball",
-                itemBanana: "Banana",
-                itemMorango: "Strawberry",
-                itemUva: "Grape",
-                itemLeiteCond: "Strawberry"
-            }
-        };
-
-function changeLanguage(lang) {
-    document.querySelectorAll('[data-i18n]').forEach((element) => {
-        const key = element.getAttribute('data-i18n');
-        const translation = translations[lang] && translations[lang][key];
-        if (translation) element.innerText = translation;
-    });
-}
-
-function mostrarDetalhes(titulo, descricao) {
-    document.getElementById('modalTitulo').innerText = titulo;
-    document.getElementById('modalTexto').innerText = descricao;
-    document.getElementById('modalDetalhes').style.display = 'flex';
-}
-function fecharModal() { document.getElementById('modalDetalhes').style.display = 'none'; }
-window.addEventListener('click', (event) => {
-    const modal = document.getElementById('modalDetalhes');
-    if (event.target === modal) fecharModal();
-});
-
-function dinheiroParaCentavos(valor) {
-    const numero = Number.parseFloat(valor);
-    return Number.isFinite(numero) ? Math.round(numero * 100) : 0;
-}
-function formatarReais(centavos) {
-    return (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-function quantidadeDoItem(selectId) {
-    const campo = document.getElementById(`qtd_${selectId}`);
-    return campo ? Number.parseInt(campo.value, 10) || 1 : 1;
-}
-
-function adicionarAcaiCustomizado() {
-    const tamanho = document.querySelector('input[name="tamanho_custom"]:checked');
-    if (!tamanho) { alert('Selecione o tamanho do Açaí!'); return; }
-    const adicionais = [...document.querySelectorAll('.extra-item:checked')];
-    const unitCents = dinheiroParaCentavos(tamanho.dataset.preco) + adicionais.reduce((sum, item) => sum + dinheiroParaCentavos(item.dataset.preco), 0);
-    const quantidade = Number.parseInt(document.getElementById('qtd_custom').value, 10) || 1;
-    acaisCustomizados.push({
-        tamanho: tamanho.value,
-        adicionais: adicionais.map((item) => item.value),
-        quantidade,
-        unitCents
-    });
-    tamanho.checked = false;
-    adicionais.forEach((item) => { item.checked = false; });
-    document.getElementById('qtd_custom').value = '1';
-    renderizarAcaisCustomizados();
-    calcularTotal();
-}
-function removerAcaiCustomizado(index) {
-    acaisCustomizados.splice(index, 1);
-    renderizarAcaisCustomizados();
-    calcularTotal();
-}
-function renderizarAcaisCustomizados() {
-    const container = document.getElementById('lista_custom_container');
-    container.replaceChildren();
-    acaisCustomizados.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'custom-item-card';
-        const details = document.createElement('div');
-        details.className = 'custom-item-info';
-        const title = document.createElement('strong');
-        title.textContent = `${item.quantidade}x Açaí ${item.tamanho} — ${formatarReais(item.unitCents * item.quantidade)}`;
-        const addOns = document.createElement('small');
-        addOns.style.color = '#ccc';
-        addOns.textContent = `Adicionais: ${item.adicionais.length ? item.adicionais.join(', ') : 'Sem adicionais'}`;
-        details.append(title, document.createElement('br'), addOns);
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'btn-remove-item';
-        remove.textContent = 'Remover';
-        remove.addEventListener('click', () => removerAcaiCustomizado(index));
-        card.append(details, remove);
-        container.appendChild(card);
-    });
-}
-
-function coletarItensPedido() {
-    const itens = [];
-    acaisCustomizados.forEach((item, customIndex) => itens.push({
-        tipo: 'montado', nome: `Açaí montado ${item.tamanho}`, tamanho: item.tamanho,
-        adicionais: item.adicionais, quantidade: item.quantidade,
-        unit_price_cents: item.unitCents, subtotal_cents: item.unitCents * item.quantidade,
-        custom_index: customIndex
-    }));
-    document.querySelectorAll('.pronto-item').forEach((select) => {
-        if (!select.value) return;
-        const chosen = select.options[select.selectedIndex];
-        const unit = dinheiroParaCentavos(select.dataset.base) + dinheiroParaCentavos(chosen.dataset.add);
-        const quantity = quantidadeDoItem(select.id);
-        const title = select.closest('.option-card').querySelector('strong').innerText.trim();
-        itens.push({ tipo: 'pronto', nome: title, tamanho: select.value, quantidade: quantity, source_id: select.id,
-            unit_price_cents: unit, subtotal_cents: unit * quantity });
-    });
-    document.querySelectorAll('.combo-item').forEach((select) => {
-        if (!select.value) return;
-        const chosen = select.options[select.selectedIndex];
-        const unit = dinheiroParaCentavos(chosen.dataset.preco);
-        const quantity = quantidadeDoItem(select.id);
-        itens.push({ tipo: 'combo', nome: select.dataset.nome, opcao: select.value, quantidade: quantity, source_id: select.id,
-            unit_price_cents: unit, subtotal_cents: unit * quantity });
-    });
-    return itens;
-}
-function calcularTotal() {
-    const itens = coletarItensPedido();
-    renderizarCarrinho(itens);
-    const total = itens.reduce((sum, item) => sum + item.subtotal_cents, 0);
-    document.getElementById('totalValue').innerText = formatarReais(total);
-    return total;
-}
-
-function renderizarCarrinho(itens = coletarItensPedido()) {
-    const container = document.getElementById('cartItems');
-    if (!container) return;
-    container.replaceChildren();
-    if (itens.length === 0) {
-        const empty = document.createElement('p');
-        empty.className = 'cart-empty-message';
-        empty.textContent = 'Seu carrinho está vazio. Selecione um açaí ou combo.';
-        container.appendChild(empty);
-        return;
-    }
-    itens.forEach((item) => {
-        const row = document.createElement('div');
-        row.className = 'cart-item-row';
-        const info = document.createElement('div');
-        info.className = 'cart-item-info';
-        const title = document.createElement('strong');
-        const option = item.tamanho || item.opcao;
-        title.textContent = `${item.quantidade}x ${item.nome}${option ? ` (${option})` : ''}`;
-        const price = document.createElement('span');
-        price.className = 'cart-item-price';
-        price.textContent = formatarReais(item.subtotal_cents);
-        info.append(title, price);
-        if (item.adicionais?.length) {
-            const extras = document.createElement('small');
-            extras.textContent = `Adicionais: ${item.adicionais.join(', ')}`;
-            info.appendChild(extras);
+:root {
+            --purple-main: #4A0E4E;
+            --purple-neon: #8A2BE2;
+            --pink-accent: #FF007F;
+            --yellow-bright: #FFD700;
+            --green-pix: #32BCAD;
+            --bg-dark: #120216;
+            --card-bg: #1E0725;
+            --text-light: #FFFFFF;
         }
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'btn-remove-item';
-        remove.textContent = 'Remover';
-        remove.setAttribute('aria-label', `Remover ${item.nome} do pedido`);
-        remove.addEventListener('click', () => {
-            if (item.tipo === 'montado') {
-                removerAcaiCustomizado(item.custom_index);
-                return;
-            }
-            const select = document.getElementById(item.source_id);
-            if (select) select.value = '';
-            const quantity = document.getElementById(`qtd_${item.source_id}`);
-            if (quantity) quantity.value = '1';
-            calcularTotal();
-        });
-        row.append(info, remove);
-        container.appendChild(row);
-    });
-}
 
-function atualizarFormaRecebimento() {
-    const retirada = document.querySelector('input[name="recebimento"]:checked')?.value === 'retirada';
-    const addressGroup = document.getElementById('deliveryAddressGroup');
-    const addressInput = document.getElementById('endereco');
-    const pickupCard = document.getElementById('pickupAddressCard');
-    addressGroup.hidden = retirada;
-    addressInput.required = !retirada;
-    pickupCard.hidden = !retirada;
-}
-function preencherDadosLoja() {
-    const config = window.LOJA_CONFIG || {};
-    const instagram = document.getElementById('instagramLink');
-    instagram.href = config.instagramUrl || 'https://www.instagram.com/';
-    const address = config.storeAddress || 'Cadastre o endereço da loja no arquivo config.js.';
-    document.getElementById('storeAddressText').textContent = address;
-    document.getElementById('storeMapLink').href = config.storeMapUrl || 'https://maps.google.com/';
-}
-function alternarTutorial(aberto) {
-    const panel = document.getElementById('helpTutorial');
-    const button = document.getElementById('helpToggle');
-    panel.hidden = !aberto;
-    button.setAttribute('aria-expanded', String(aberto));
-    if (aberto) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
 
-async function salvarPedidoNoBanco(pedido) {
-    const config = window.LOJA_CONFIG || {};
-    if (!config.supabaseUrl || !config.supabaseAnonKey) return { saved: false, reason: 'not-configured' };
-    const baseUrl = config.supabaseUrl.replace(/\/$/, '');
-    const response = await fetch(`${baseUrl}/rest/v1/${encodeURIComponent(config.databaseTable || 'pedidos')}`, {
-        method: 'POST',
-        headers: {
-            apikey: config.supabaseAnonKey,
-            'Content-Type': 'application/json',
-            Prefer: 'return=minimal'
-        },
-        body: JSON.stringify(pedido)
-    });
-    if (!response.ok) throw new Error(`Supabase respondeu ${response.status}`);
-    return { saved: true };
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding-bottom: 120px;
+        }
+
+        .language-picker-container {
+            background-color: #0d0111;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .language-picker-container label {
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            color: #ccc;
+        }
+
+        .lang-select {
+            background: var(--card-bg);
+            color: white;
+            border: 1px solid var(--purple-neon);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        header {
+            background: linear-gradient(135deg, #FF007F, #8A2BE2, #4A0E4E);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-container {
+            margin-bottom: 1rem;
+        }
+
+        .logo-img {
+            max-width: 150px;
+            height: auto;
+            border-radius: 50%;
+            border: 3px solid var(--yellow-bright);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            background-color: var(--card-bg);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            letter-spacing: 1.5px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--yellow-bright);
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            color: var(--yellow-bright);
+            border-left: 5px solid var(--pink-accent);
+            padding-left: 0.8rem;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+        }
+
+        .step-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            color: var(--pink-accent);
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-card:hover {
+            border-color: var(--pink-accent);
+            transform: translateY(-3px);
+        }
+
+        .option-card img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-card strong {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .price-tag {
+            color: var(--yellow-bright);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-details {
+            background: transparent;
+            border: 1px solid var(--pink-accent);
+            color: var(--pink-accent);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-details:hover {
+            background: var(--pink-accent);
+            color: white;
+        }
+
+        .select-input, .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--purple-neon);
+            background: #2A0A33;
+            color: white;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .qty-select {
+            width: 100%;
+            padding: 0.4rem;
+            border-radius: 6px;
+            border: 1px solid var(--purple-neon);
+            background: #2A0A33;
+            color: white;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .pix-badge {
+            background-color: var(--green-pix);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .btn-add-custom {
+            background: var(--yellow-bright);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn-add-custom:hover {
+            background: #e6c200;
+        }
+
+        .custom-list {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #1E0725, #4A0E4E);
+            border-top: 2px solid var(--pink-accent);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .cart-info {
+            font-size: 1.2rem;
+        }
+
+        .btn-order {
+            background: linear-gradient(45deg, #FF007F, #8A2BE2);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+            transition: transform 0.2s;
+        }
+
+        .btn-order:hover {
+            transform: scale(1.05);
+        }
+
+        /* Estrutura do Modal de Detalhes */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 2px solid var(--purple-neon);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+
+        .modal-content h3 {
+            color: var(--yellow-bright);
+            margin-bottom: 0.8rem;
+        }
+
+        .modal-content p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .btn-close-modal {
+            background: var(--pink-accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    
+
+
+        .site-footer {
+            background-color: #0b010e;
+            border-top: 1px solid rgba(138, 43, 226, 0.3);
+            color: #b3b3b3;
+            text-align: center;
+            padding: 2rem 1rem 3rem 1rem;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .site-footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .site-footer a {
+            color: var(--yellow-bright);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .site-footer a:hover {
+            color: var(--pink-accent);
+            text-decoration: underline;
+        }
+
+        .footer-credits {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 1rem;
+        }
+    
+
+/* Ações do cabeçalho, tutorial, retirada e aviso do pedido */
+.header-actions { display: flex; align-items: center; gap: .65rem; }
+.header-link { color: var(--yellow-bright); border: 1px solid var(--purple-neon); background: var(--card-bg); border-radius: 7px; padding: .4rem .7rem; text-decoration: none; font: inherit; font-size: .85rem; cursor: pointer; }
+.header-link:hover { border-color: var(--pink-accent); color: white; }
+.help-tutorial { max-width: 900px; margin: 1rem auto 0; padding: 1.2rem 1.5rem; border: 1px solid var(--purple-neon); border-radius: 14px; background: var(--card-bg); box-shadow: 0 4px 15px rgba(0,0,0,.3); }
+.help-tutorial[hidden], .pickup-address-card[hidden] { display: none; }
+.help-tutorial h2 { color: var(--yellow-bright); font-size: 1.25rem; }
+.help-tutorial ol { padding-left: 1.3rem; line-height: 1.65; }
+.help-tutorial li { margin: .35rem 0; }
+.help-tutorial-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: .5rem; }
+.btn-close-help { color: white; background: var(--pink-accent); border: 0; border-radius: 6px; padding: .45rem .8rem; cursor: pointer; }
+.field-label { display: block; font-weight: 600; }
+.fulfillment-options { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: .5rem; }
+.fulfillment-option { display: flex; align-items: center; gap: .45rem; padding: .7rem .9rem; border: 1px solid rgba(138,43,226,.7); border-radius: 8px; background: rgba(255,255,255,.05); cursor: pointer; }
+.fulfillment-option input { accent-color: var(--pink-accent); }
+.pickup-address-card { margin: .5rem 0 1rem; padding: 1rem; border: 1px solid var(--yellow-bright); border-radius: 10px; background: rgba(255,215,0,.08); line-height: 1.5; }
+.pickup-address-card strong { display: block; color: var(--yellow-bright); margin-bottom: .3rem; }
+.pickup-address-card p { white-space: pre-line; margin-bottom: .4rem; }
+.pickup-address-card a { color: var(--yellow-bright); }
+.order-notice { margin-top: 1rem; padding: .9rem 1rem; color: #fff; background: rgba(255,0,127,.12); border-left: 4px solid var(--pink-accent); border-radius: 6px; line-height: 1.5; }
+.database-status { margin-top: .5rem; font-size: .85rem; color: #ccc; }
+.cart-items-list { display: flex; flex-direction: column; gap: .65rem; }
+.cart-empty-message { color: #ccc; }
+.cart-item-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem; border: 1px solid rgba(138,43,226,.3); border-radius: 8px; background: rgba(255,255,255,.04); }
+.cart-item-info { display: flex; flex-direction: column; gap: .2rem; }
+.cart-item-price { color: var(--yellow-bright); font-weight: 700; }
+.cart-item-info small { color: #ccc; }
+.cart-item-row .btn-remove-item { flex: 0 0 auto; background: #9d184a; color: white; border: 0; border-radius: 6px; padding: .45rem .7rem; cursor: pointer; }
+.cart-item-row .btn-remove-item:hover { background: var(--pink-accent); }
+@media (max-width: 600px) {
+  .language-picker-container { align-items: flex-start; gap: .7rem; flex-direction: column; }
+  .header-actions { flex-wrap: wrap; }
+  .help-tutorial { margin: .8rem 1rem 0; }
+  .cart-item-row { align-items: flex-start; }
 }
-
-async function enviarPedido() {
-    const nome = document.getElementById('nome').value.trim();
-    const forma = document.querySelector('input[name="recebimento"]:checked')?.value || 'entrega';
-    const endereco = document.getElementById('endereco').value.trim();
-    const itens = coletarItensPedido();
-    const totalCents = itens.reduce((sum, item) => sum + item.subtotal_cents, 0);
-    if (!nome) { alert('Por favor, informe seu nome.'); return; }
-    if (forma === 'entrega' && !endereco) { alert('Por favor, preencha seu endereço de entrega.'); return; }
-    if (!itens.length || totalCents <= 0) { alert('Adicione pelo menos um item ao pedido!'); return; }
-
-    const config = window.LOJA_CONFIG || {};
-    const destino = forma === 'retirada' ? 'Retirada na loja' : `Entrega — ${endereco}`;
-    let mensagem = `🍇 *NOVO PEDIDO - AÇAÍ DA HORA* 🍇\n\n`;
-    mensagem += `👤 *Cliente:* ${nome}\n📍 *Recebimento:* ${destino}\n\n*ITENS DO PEDIDO:*\n`;
-    itens.forEach((item) => {
-        const adicionais = item.adicionais?.length ? ` | Adicionais: ${item.adicionais.join(', ')}` : '';
-        const opcao = item.tamanho || item.opcao || '';
-        mensagem += `• ${item.quantidade}x ${item.nome} ${opcao ? `(${opcao})` : ''}${adicionais} — ${formatarReais(item.subtotal_cents)}\n`;
-    });
-    mensagem += `\n💰 *Total:* ${formatarReais(totalCents)}\n💳 *Pagamento:* PIX\n`;
-    mensagem += `⚠️ Seu pedido será confirmado após envio do comprovante de pagamento pelo WhatsApp.`;
-
-    const phone = String(config.whatsapp || '').replace(/\D/g, '');
-    if (!phone) { alert('Configure o número do WhatsApp no arquivo config.js.'); return; }
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(mensagem)}`;
-    const whatsappWindow = window.open('about:blank', '_blank');
-    const status = document.getElementById('databaseStatus');
-    status.textContent = '';
-    const pedido = {
-        customer_name: nome,
-        fulfilment_method: forma,
-        delivery_address: forma === 'entrega' ? endereco : null,
-        items: itens,
-        total_cents: totalCents,
-        payment_method: 'PIX',
-        status: 'aguardando_comprovante'
-    };
-    try {
-        const result = await salvarPedidoNoBanco(pedido);
-        if (result.saved) status.textContent = 'Pedido registrado no banco de dados. Envie o comprovante pelo WhatsApp para confirmação.';
-        else status.textContent = 'O banco ainda não está configurado; o pedido seguirá pelo WhatsApp normalmente.';
-    } catch (error) {
-        console.error('Não foi possível registrar o pedido no banco:', error);
-        status.textContent = 'Não foi possível registrar no banco agora; o pedido seguirá pelo WhatsApp normalmente.';
-    }
-    if (whatsappWindow) whatsappWindow.location.href = whatsappUrl;
-    else window.location.href = whatsappUrl;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    preencherDadosLoja();
-    document.getElementById('helpToggle').addEventListener('click', () => alternarTutorial(document.getElementById('helpTutorial').hidden));
-    document.getElementById('helpClose').addEventListener('click', () => alternarTutorial(false));
-    document.querySelectorAll('input[name="recebimento"]').forEach((radio) => radio.addEventListener('change', atualizarFormaRecebimento));
-    atualizarFormaRecebimento();
-    document.querySelectorAll('.pronto-item, .combo-item, [id^="qtd_pronto_"], [id^="qtd_combo_"]').forEach((field) => field.addEventListener('change', calcularTotal));
-    document.querySelectorAll('input[name="tamanho_custom"], .extra-item').forEach((field) => field.addEventListener('change', calcularTotal));
-    calcularTotal();
-});
