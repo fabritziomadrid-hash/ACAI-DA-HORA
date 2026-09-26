@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Açaí da Hora - O Mais Delicioso!</title>
-    <link rel="stylesheet" href="styles.css?v=no-email-v1">
+    <link rel="stylesheet" href="styles.css?v=delivery-fee-v1">
     
 </head>
 <body>
@@ -31,6 +31,14 @@
         </div>
         <h1>🍇 AÇAÍ DA HORA 🍇</h1>
         <p class="tagline" data-i18n="tagline">O açaí mais cremoso da cidade!</p>
+        <a id="instagramHeroLink" class="instagram-spotlight" href="https://www.instagram.com/acaidah.ora/" target="_blank" rel="noopener noreferrer">
+            <span class="instagram-spotlight-icon" aria-hidden="true">◎</span>
+            <span class="instagram-spotlight-copy">
+                <strong>Siga a loja no Instagram</strong>
+                <small>Poste seu açaí nos Stories e marque <b>@acaidah.ora</b>!</small>
+            </span>
+            <span class="instagram-spotlight-action">Ver perfil <span aria-hidden="true">↗</span></span>
+        </a>
         <div id="businessHoursStatus" class="business-hours-status" data-state="checking" role="status" aria-live="polite">
             <span class="business-status-dot" aria-hidden="true"></span>
             <span id="businessHoursLabel">Verificando horário...</span>
@@ -375,10 +383,11 @@
             <div class="form-group">
                 <span class="field-label">Como deseja receber?</span>
                 <div class="fulfillment-options" role="radiogroup" aria-label="Forma de recebimento">
-                    <label class="fulfillment-option"><input type="radio" name="recebimento" value="entrega" checked> Entrega</label>
+                    <label class="fulfillment-option"><input type="radio" name="recebimento" value="entrega" checked> Entrega (consultar taxa)</label>
                     <label class="fulfillment-option"><input type="radio" name="recebimento" value="retirada"> Retirada na loja</label>
                 </div>
             </div>
+            <p id="deliveryFeeNotice" class="delivery-fee-notice" role="note" aria-live="polite" hidden><strong>Entrega (consultar taxa):</strong> a taxa será informada pelo WhatsApp e não está incluída no total mostrado no site.</p>
             <div class="form-group" id="deliveryAddressGroup">
                 <label for="endereco" data-i18n="labelAddress">Endereço de Entrega:</label>
                 <input type="text" id="endereco" class="form-control" placeholder="Rua, Número, Bairro" autocomplete="street-address">
@@ -428,6 +437,6 @@
     </footer>
 
     <script src="config.js"></script>
-    <script src="script.js?v=no-email-v1"></script>
+    <script src="script.js?v=delivery-fee-v1"></script>
 </body>
 </html>
