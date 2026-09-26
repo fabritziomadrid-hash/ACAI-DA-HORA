@@ -279,14 +279,18 @@ function atualizarFormaRecebimento() {
     const addressGroup = document.getElementById('deliveryAddressGroup');
     const addressInput = document.getElementById('endereco');
     const pickupCard = document.getElementById('pickupAddressCard');
+    const deliveryFeeNotice = document.getElementById('deliveryFeeNotice');
     addressGroup.hidden = retirada;
     addressInput.required = !retirada;
     pickupCard.hidden = !retirada;
+    deliveryFeeNotice.hidden = retirada;
 }
 function preencherDadosLoja() {
     const config = window.LOJA_CONFIG || {};
     const instagram = document.getElementById('instagramLink');
     instagram.href = config.instagramUrl || 'https://www.instagram.com/';
+    const instagramHero = document.getElementById('instagramHeroLink');
+    if (instagramHero) instagramHero.href = config.instagramUrl || 'https://www.instagram.com/';
     const address = config.storeAddress || 'Cadastre o endereço da loja no arquivo config.js.';
     document.getElementById('storeAddressText').textContent = address;
     document.getElementById('storeMapLink').href = config.storeMapUrl || 'https://maps.google.com/';
@@ -424,7 +428,7 @@ async function enviarPedido() {
     if (!itens.length || totalCents <= 0) { alert('Adicione pelo menos um item ao pedido!'); return; }
 
     const config = window.LOJA_CONFIG || {};
-    const destino = forma === 'retirada' ? 'Retirada na loja' : `Entrega — ${endereco}`;
+    const destino = forma === 'retirada' ? 'Retirada na loja' : `Entrega (consultar taxa) — ${endereco}`;
     let mensagem = `🍇 *NOVO PEDIDO - AÇAÍ DA HORA* 🍇\n\n`;
     mensagem += `👤 *Cliente:* ${nome}\n📍 *Recebimento:* ${destino}\n\n*ITENS DO PEDIDO:*\n`;
     itens.forEach((item) => {
@@ -433,6 +437,7 @@ async function enviarPedido() {
         mensagem += `• ${item.quantidade}x ${item.nome} ${opcao ? `(${opcao})` : ''}${adicionais} — ${formatarReais(item.subtotal_cents)}\n`;
     });
     mensagem += `\n💰 *Total:* ${formatarReais(totalCents)}\n💳 *Pagamento:* PIX\n`;
+    if (forma === 'entrega') mensagem += `🚚 *Taxa de entrega:* consultar com a loja; não incluída no total acima.\n`;
     mensagem += `⚠️ Seu pedido será confirmado após envio do comprovante de pagamento pelo WhatsApp.`;
 
     const phone = String(config.whatsapp || '').replace(/\D/g, '');
