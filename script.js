@@ -1,5 +1,20 @@
 /* Açaí da Hora — carrinho, checkout, ajuda e gravação opcional no Supabase. */
 let acaisCustomizados = [];
+let supabaseClient = null;
+let communityUser = null;
+const REVIEW_PRODUCTS = {
+    'acai-300ml': 'Açaí 300ml',
+    'acai-500ml': 'Açaí 500ml',
+    'acai-700ml': 'Açaí 700ml',
+    'marmita-750ml': 'Açaí na marmita 750ml',
+    sensacao: 'Açaí Sensação',
+    moranguinho: 'Moranguinho',
+    'arco-iris': 'Arco-íris',
+    'banana-crunch': 'Banana Crunch',
+    'combo-arco-iris': 'Combo Arco-íris',
+    'combo-moranguinho': 'Combo Moranguinho',
+    'combo-sensacao': 'Combo Sensação'
+};
 
 const translations = {
             pt: {
@@ -291,6 +306,293 @@ function preencherDadosLoja() {
     document.getElementById('storeAddressText').textContent = address;
     document.getElementById('storeMapLink').href = config.storeMapUrl || 'https://maps.google.com/';
 }
+
+function getBusinessHoursState(now = new Date(), config = window.LOJA_CONFIG || {}) {
+    const timeZone = config.businessTimeZone || 'America/Sao_Paulo';
+    const weekdayOrder = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+    const weekdayLabels = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+    const intlWeekdayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dateParts = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        weekday: 'long',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+    }).formatToParts(now);
+    const parts = Object.fromEntries(dateParts.map((part) => [part.type, part.value]));
+    const todayIndex = intlWeekdayOrder.indexOf(String(parts.weekday).toLowerCase());
+    const nowMinutes = Number(parts.hour) * 60 + Number(parts.minute);
+    const schedule = config.businessHours || {};
+    const minutesFromTime = (time) => {
+        const [hour, minute] = String(time || '').split(':').map(Number);
+        return Number.isFinite(hour) && Number.isFinite(minute) ? hour * 60 + minute : NaN;
+    };
+    const formatTime = (time) => {
+        const [hour, minute] = String(time || '').split(':');
+        return minute === '00' ? `${Number(hour)}h` : `${Number(hour)}h${minute}`;
+    };
+    const todayKey = weekdayOrder[todayIndex];
+    const todaySlots = Array.isArray(schedule[todayKey]) ? schedule[todayKey] : [];
+    const currentSlot = todaySlots.find((slot) => {
+        const open = minutesFromTime(slot.open);
+        const close = minutesFromTime(slot.close);
+        return nowMinutes >= open && nowMinutes < close;
+    });
+    if (currentSlot) {
+        return { state: 'open', label: `Aberto agora · Fecha às ${formatTime(currentSlot.close)}` };
+    }
+
+    let nextOpening = null;
+    for (let offset = 0; offset <= 7; offset += 1) {
+        const dayIndex = (todayIndex + offset) % 7;
+        const dayKey = weekdayOrder[dayIndex];
+        const slots = Array.isArray(schedule[dayKey]) ? schedule[dayKey] : [];
+        const nextSlot = slots.find((slot) => offset > 0 || minutesFromTime(slot.open) > nowMinutes);
+        if (nextSlot) {
+            nextOpening = { offset, dayIndex, open: nextSlot.open };
+            break;
+        }
+    }
+    if (!nextOpening) return { state: 'closed', label: 'Fechado agora · Consulte os horários' };
+    const when = nextOpening.offset === 0
+        ? 'hoje'
+        : nextOpening.offset === 1
+            ? 'amanhã'
+            : `na ${weekdayLabels[nextOpening.dayIndex]}`;
+    return { state: 'closed', label: `Fechado agora · Abre ${when} às ${formatTime(nextOpening.open)}` };
+}
+
+function formatBusinessTime(time) {
+    const [hour, minute] = String(time || '').split(':');
+    if (minute === '00') return `${Number(hour)}h`;
+    return `${Number(hour)}h${minute}`;
+}
+
+function buildBusinessHoursSummary(config = window.LOJA_CONFIG || {}) {
+    const weekdayOrder = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+    const weekdayLabels = ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado', 'domingo'];
+    const schedule = config.businessHours || {};
+    const groups = new Map();
+    weekdayOrder.forEach((day, index) => {
+        const slots = Array.isArray(schedule[day]) ? schedule[day] : [];
+        const hours = slots.length
+            ? slots.map((slot) => `${formatBusinessTime(slot.open)}–${formatBusinessTime(slot.close)}`).join(', ')
+            : 'fechado';
+        if (!groups.has(hours)) groups.set(hours, []);
+        groups.get(hours).push(weekdayLabels[index]);
+    });
+    return [...groups.entries()]
+        .map(([hours, days]) => `${days.join(', ')}: ${hours}`)
+        .join(' · ');
+}
+
+function atualizarStatusAtendimento() {
+    const statusElement = document.getElementById('businessHoursStatus');
+    const label = document.getElementById('businessHoursLabel');
+    if (!statusElement || !label) return;
+    const summary = document.getElementById('businessHoursSummary');
+    if (summary) summary.textContent = `Atendimento: ${buildBusinessHoursSummary()}`;
+    try {
+        const result = getBusinessHoursState();
+        statusElement.dataset.state = result.state;
+        label.textContent = result.label;
+    } catch (error) {
+        statusElement.dataset.state = 'closed';
+        label.textContent = 'Consulte os horários de atendimento';
+        console.error('Não foi possível calcular o horário de atendimento:', error);
+    }
+}
+
+function setCommunityStatus(id, message, isError = false) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.textContent = message;
+    element.classList.toggle('community-error', isError);
+}
+
+function updateCommunityAuthUI() {
+    const signInButton = document.getElementById('googleSignInButton');
+    const signOutButton = document.getElementById('googleSignOutButton');
+    const reviewForm = document.getElementById('reviewForm');
+    const marketingPanel = document.getElementById('marketingPanel');
+    const displayName = communityUser?.user_metadata?.full_name
+        || communityUser?.user_metadata?.name
+        || communityUser?.email
+        || '';
+    signInButton.hidden = Boolean(communityUser);
+    signOutButton.hidden = !communityUser;
+    reviewForm.hidden = !communityUser;
+    marketingPanel.hidden = !communityUser;
+    if (communityUser) {
+        setCommunityStatus('authStatus', `Você entrou como ${displayName}.`);
+        loadMarketingPreference();
+    } else {
+        setCommunityStatus('authStatus', 'Entre com Google para avaliar os produtos.');
+        document.getElementById('marketingOptIn').checked = false;
+        setCommunityStatus('marketingStatus', '');
+    }
+}
+
+async function signInWithGoogle() {
+    if (!supabaseClient) {
+        setCommunityStatus('authStatus', 'O login ainda não foi configurado. Confira URL e chave pública do Supabase.', true);
+        return;
+    }
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href.split('#')[0] }
+    });
+    if (error) setCommunityStatus('authStatus', `Não foi possível iniciar o login: ${error.message}`, true);
+}
+
+async function signOutCommunity() {
+    if (!supabaseClient) return;
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) setCommunityStatus('authStatus', `Não foi possível sair: ${error.message}`, true);
+    else {
+        communityUser = null;
+        updateCommunityAuthUI();
+    }
+}
+
+function getGoogleDisplayName(user) {
+    const metadata = user?.user_metadata || {};
+    return String(metadata.full_name || metadata.name || user?.email?.split('@')[0] || 'Cliente').slice(0, 120);
+}
+
+async function loadApprovedReviews() {
+    const list = document.getElementById('reviewsList');
+    if (!list) return;
+    if (!supabaseClient) {
+        list.textContent = 'As avaliações aparecerão aqui quando o banco e as tabelas de avaliações estiverem configurados.';
+        return;
+    }
+    const { data, error } = await supabaseClient
+        .from('product_reviews')
+        .select('product_slug, author_name, rating, comment, created_at')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false })
+        .limit(50);
+    list.replaceChildren();
+    if (error) {
+        list.textContent = 'Não foi possível carregar as avaliações agora.';
+        console.error('Erro ao carregar avaliações:', error);
+        return;
+    }
+    if (!data?.length) {
+        list.textContent = 'Ainda não há avaliações publicadas.';
+        return;
+    }
+    data.forEach((review) => {
+        const card = document.createElement('article');
+        card.className = 'review-card';
+        const title = document.createElement('strong');
+        title.textContent = REVIEW_PRODUCTS[review.product_slug] || 'Produto da loja';
+        const stars = document.createElement('span');
+        stars.className = 'review-stars';
+        stars.setAttribute('aria-label', `Nota ${review.rating} de 5`);
+        stars.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
+        const author = document.createElement('small');
+        author.textContent = `Por ${review.author_name}`;
+        const comment = document.createElement('p');
+        comment.textContent = review.comment;
+        card.append(title, stars, author, comment);
+        list.appendChild(card);
+    });
+}
+
+async function loadMarketingPreference() {
+    if (!supabaseClient || !communityUser) return;
+    const { data, error } = await supabaseClient
+        .from('marketing_preferences')
+        .select('opted_in')
+        .eq('user_id', communityUser.id)
+        .maybeSingle();
+    if (error) {
+        setCommunityStatus('marketingStatus', 'Não foi possível carregar sua preferência agora.', true);
+        return;
+    }
+    document.getElementById('marketingOptIn').checked = data?.opted_in === true;
+    setCommunityStatus('marketingStatus', data
+        ? (data.opted_in ? 'Você autorizou receber novidades por e-mail.' : 'Você não autorizou receber novidades por e-mail.')
+        : 'Você ainda não escolheu se quer receber novidades.');
+}
+
+async function saveMarketingPreference() {
+    if (!supabaseClient || !communityUser) return;
+    const optedIn = document.getElementById('marketingOptIn').checked;
+    const updatedAt = new Date().toISOString();
+    const { error } = await supabaseClient.from('marketing_preferences').upsert({
+        user_id: communityUser.id,
+        email: optedIn ? communityUser.email : null,
+        opted_in: optedIn,
+        updated_at: updatedAt,
+        opted_in_at: optedIn ? updatedAt : null
+    }, { onConflict: 'user_id' });
+    if (error) {
+        setCommunityStatus('marketingStatus', 'Não foi possível salvar sua preferência. Verifique se aplicou o SQL de avaliações e consentimentos.', true);
+        console.error('Erro ao salvar preferência de novidades:', error);
+        return;
+    }
+    setCommunityStatus('marketingStatus', optedIn
+        ? 'Autorização registrada. Você poderá cancelar essa opção aqui quando quiser.'
+        : 'Preferência salva: você não autorizou receber novidades por e-mail.');
+}
+
+async function submitProductReview(event) {
+    event.preventDefault();
+    if (!supabaseClient || !communityUser) {
+        setCommunityStatus('reviewStatus', 'Entre com Google antes de enviar uma avaliação.', true);
+        return;
+    }
+    const productSlug = document.getElementById('reviewProduct').value;
+    const rating = Number.parseInt(document.getElementById('reviewRating').value, 10);
+    const comment = document.getElementById('reviewComment').value.trim();
+    if (!Object.hasOwn(REVIEW_PRODUCTS, productSlug) || rating < 1 || rating > 5 || comment.length < 3) {
+        setCommunityStatus('reviewStatus', 'Escolha um produto, uma nota e escreva um comentário com pelo menos 3 caracteres.', true);
+        return;
+    }
+    const { error } = await supabaseClient.from('product_reviews').insert({
+        user_id: communityUser.id,
+        product_slug: productSlug,
+        author_name: getGoogleDisplayName(communityUser),
+        rating,
+        comment,
+        status: 'pending'
+    });
+    if (error) {
+        const message = error.code === '23505'
+            ? 'Você já enviou uma avaliação para esse produto.'
+            : 'Não foi possível enviar a avaliação. Verifique se aplicou o SQL de avaliações e consentimentos.';
+        setCommunityStatus('reviewStatus', message, true);
+        console.error('Erro ao enviar avaliação:', error);
+        return;
+    }
+    document.getElementById('reviewForm').reset();
+    setCommunityStatus('reviewStatus', 'Obrigado! Sua avaliação ficará aguardando aprovação da loja antes de aparecer no site.');
+}
+
+async function initializeCommunity() {
+    const config = window.LOJA_CONFIG || {};
+    if (window.supabase?.createClient && config.supabaseUrl && config.supabaseAnonKey) {
+        supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            communityUser = session?.user || null;
+            window.setTimeout(updateCommunityAuthUI, 0);
+        });
+        const { data } = await supabaseClient.auth.getSession();
+        communityUser = data?.session?.user || null;
+        updateCommunityAuthUI();
+    } else {
+        setCommunityStatus('authStatus', 'Login e avaliações serão ativados após carregar o Supabase.');
+    }
+    await loadApprovedReviews();
+    document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
+    document.getElementById('googleSignOutButton').addEventListener('click', signOutCommunity);
+    document.getElementById('saveMarketingPreference').addEventListener('click', saveMarketingPreference);
+    document.getElementById('reviewForm').addEventListener('submit', submitProductReview);
+}
+
 function alternarTutorial(aberto) {
     const panel = document.getElementById('helpTutorial');
     const button = document.getElementById('helpToggle');
@@ -367,6 +669,8 @@ async function enviarPedido() {
 
 document.addEventListener('DOMContentLoaded', () => {
     preencherDadosLoja();
+    atualizarStatusAtendimento();
+    window.setInterval(atualizarStatusAtendimento, 60 * 1000);
     document.getElementById('helpToggle').addEventListener('click', () => alternarTutorial(document.getElementById('helpTutorial').hidden));
     document.getElementById('helpClose').addEventListener('click', () => alternarTutorial(false));
     document.querySelectorAll('input[name="recebimento"]').forEach((radio) => radio.addEventListener('change', atualizarFormaRecebimento));
@@ -374,4 +678,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.pronto-item, .combo-item, [id^="qtd_pronto_"], [id^="qtd_combo_"]').forEach((field) => field.addEventListener('change', calcularTotal));
     document.querySelectorAll('input[name="tamanho_custom"], .extra-item').forEach((field) => field.addEventListener('change', calcularTotal));
     calcularTotal();
+    initializeCommunity();
 });
