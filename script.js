@@ -388,55 +388,6 @@ function atualizarStatusAtendimento() {
     }
 }
 
-async function salvarInscricaoNovidades(email) {
-    const config = window.LOJA_CONFIG || {};
-    if (!config.supabaseUrl || !config.supabaseAnonKey) {
-        throw new Error('O cadastro ainda não está conectado ao banco.');
-    }
-    const baseUrl = config.supabaseUrl.replace(/\/$/, '');
-    const response = await fetch(`${baseUrl}/rest/v1/newsletter_subscribers`, {
-        method: 'POST',
-        headers: {
-            apikey: config.supabaseAnonKey,
-            'Content-Type': 'application/json',
-            Prefer: 'return=minimal'
-        },
-        body: JSON.stringify({ email: email.toLowerCase(), marketing_consent: true })
-    });
-    if (response.status === 409) throw new Error('Este e-mail já está cadastrado para receber novidades.');
-    if (!response.ok) throw new Error('Não foi possível salvar. Confirme se o SQL da lista de novidades já foi executado no Supabase.');
-}
-
-async function cadastrarParaNovidades(event) {
-    event.preventDefault();
-    const form = document.getElementById('newsletterForm');
-    const emailInput = document.getElementById('newsletterEmail');
-    const consent = document.getElementById('newsletterConsent');
-    const status = document.getElementById('newsletterStatus');
-    const button = form.querySelector('button[type="submit"]');
-    if (!consent.checked) {
-        status.textContent = 'Marque a autorização para receber novidades antes de continuar.';
-        return;
-    }
-    const email = emailInput.value.trim();
-    if (!emailInput.checkValidity()) {
-        emailInput.reportValidity();
-        return;
-    }
-    button.disabled = true;
-    status.textContent = 'Salvando sua inscrição...';
-    try {
-        await salvarInscricaoNovidades(email);
-        form.reset();
-        status.textContent = 'Inscrição registrada. Obrigado! Para sair da lista, peça o cancelamento pelo WhatsApp da loja.';
-    } catch (error) {
-        status.textContent = error.message || 'Não foi possível salvar sua inscrição agora.';
-        console.error('Erro ao cadastrar e-mail para novidades:', error);
-    } finally {
-        button.disabled = false;
-    }
-}
-
 function alternarTutorial(aberto) {
     const panel = document.getElementById('helpTutorial');
     const button = document.getElementById('helpToggle');
@@ -522,5 +473,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.pronto-item, .combo-item, [id^="qtd_pronto_"], [id^="qtd_combo_"]').forEach((field) => field.addEventListener('change', calcularTotal));
     document.querySelectorAll('input[name="tamanho_custom"], .extra-item').forEach((field) => field.addEventListener('change', calcularTotal));
     calcularTotal();
-    document.getElementById('newsletterForm').addEventListener('submit', cadastrarParaNovidades);
 });
