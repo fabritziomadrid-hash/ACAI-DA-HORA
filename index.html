@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Açaí da Hora - O Mais Delicioso!</title>
-    <link rel="stylesheet" href="styles.css?v=combo-fix-3">
+    <link rel="stylesheet" href="styles.css?v=business-hours-v1">
     
 </head>
 <body>
@@ -13,6 +13,7 @@
             <div class="header-actions">
                 <a id="instagramLink" class="header-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram da loja</a>
                 <button id="helpToggle" class="header-link help-toggle" type="button" aria-expanded="false" aria-controls="helpTutorial">Precisa de ajuda?</button>
+                <button id="googleSignInButton" class="header-link" type="button">Entrar com Google</button>
             </div>
 
         <div>
@@ -31,6 +32,11 @@
         </div>
         <h1>🍇 AÇAÍ DA HORA 🍇</h1>
         <p class="tagline" data-i18n="tagline">O açaí mais cremoso da cidade!</p>
+        <div id="businessHoursStatus" class="business-hours-status" data-state="checking" role="status" aria-live="polite">
+            <span class="business-status-dot" aria-hidden="true"></span>
+            <span id="businessHoursLabel">Verificando horário...</span>
+        </div>
+        <p id="businessHoursSummary" class="business-hours-summary">Horários de atendimento configurados no site.</p>
     </header>
 
     <section id="helpTutorial" class="help-tutorial" hidden aria-labelledby="helpTitle">
@@ -354,6 +360,62 @@
             </div>
         </div>
 
+        <section id="customerCommunity" class="step-box community-section" aria-labelledby="communityTitle">
+            <h2 id="communityTitle" class="section-title">Clientes, avaliações e novidades</h2>
+            <div class="community-auth-row">
+                <p id="authStatus" class="community-status" aria-live="polite">Entre com Google para avaliar os produtos.</p>
+                <button id="googleSignOutButton" class="btn-community-secondary" type="button" hidden>Sair da conta</button>
+            </div>
+            <p id="reviewPrivacyNotice" class="community-note">Para enviar uma avaliação, entre com sua conta Google. O nome do perfil Google será mostrado junto da avaliação se ela for aprovada.</p>
+
+            <div id="marketingPanel" class="marketing-panel" hidden>
+                <label class="marketing-consent-label" for="marketingOptIn">
+                    <input id="marketingOptIn" type="checkbox">
+                    <span>Quero receber por e-mail novidades da loja, como descontos do dia, novos combos e atualizações. Essa autorização é opcional e posso cancelar depois.</span>
+                </label>
+                <p class="community-note">Marque a caixa e clique em “Salvar minha preferência” se quiser autorizar. Só marcar a caixa não envia mensagens; esta opção apenas registra sua autorização.</p>
+                <button id="saveMarketingPreference" class="btn-community-secondary" type="button">Salvar minha preferência</button>
+                <p id="marketingStatus" class="community-status" aria-live="polite"></p>
+            </div>
+
+            <form id="reviewForm" class="review-form" hidden>
+                <h3>Deixe sua avaliação</h3>
+                <label for="reviewProduct">Produto</label>
+                <select id="reviewProduct" class="form-control" required>
+                    <option value="">Escolha um produto</option>
+                    <option value="acai-300ml">Açaí 300ml</option>
+                    <option value="acai-500ml">Açaí 500ml</option>
+                    <option value="acai-700ml">Açaí 700ml</option>
+                    <option value="marmita-750ml">Açaí na marmita 750ml</option>
+                    <option value="sensacao">Açaí Sensação</option>
+                    <option value="moranguinho">Moranguinho</option>
+                    <option value="arco-iris">Arco-íris</option>
+                    <option value="banana-crunch">Banana Crunch</option>
+                    <option value="combo-arco-iris">Combo Arco-íris</option>
+                    <option value="combo-moranguinho">Combo Moranguinho</option>
+                    <option value="combo-sensacao">Combo Sensação</option>
+                </select>
+                <label for="reviewRating">Nota</label>
+                <select id="reviewRating" class="form-control" required>
+                    <option value="5">5 estrelas — adorei</option>
+                    <option value="4">4 estrelas</option>
+                    <option value="3">3 estrelas</option>
+                    <option value="2">2 estrelas</option>
+                    <option value="1">1 estrela</option>
+                </select>
+                <label for="reviewComment">Comentário</label>
+                <textarea id="reviewComment" class="form-control" rows="4" maxlength="1000" required placeholder="Conte como foi sua experiência (até 1000 caracteres)"></textarea>
+                <p class="community-note">As avaliações só aparecerão no site depois da aprovação da loja. Envie uma avaliação por produto.</p>
+                <button class="btn-community-primary" type="submit">Enviar avaliação</button>
+                <p id="reviewStatus" class="community-status" aria-live="polite"></p>
+            </form>
+
+            <div class="published-reviews">
+                <h3>Avaliações publicadas</h3>
+                <div id="reviewsList" class="reviews-list" aria-live="polite"><p class="community-note">Carregando avaliações...</p></div>
+            </div>
+        </section>
+
         <h2 class="section-title" data-i18n="checkoutTitle">Finalizar Pedido</h2>
         <div class="step-box cart-summary-box">
             <div class="step-title">Itens do pedido</div>
@@ -422,7 +484,8 @@
         <p class="footer-credits">Hospedado via <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a></p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js?v=combo-fix-3"></script>
+    <script src="script.js?v=business-hours-v1"></script>
 </body>
 </html>
