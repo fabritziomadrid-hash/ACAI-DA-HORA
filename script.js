@@ -1,20 +1,5 @@
-/* Açaí da Hora — carrinho, checkout, ajuda e gravação opcional no Supabase. */
+/* Açaí da Hora — carrinho, checkout, horário comercial e inscrição opcional em novidades. */
 let acaisCustomizados = [];
-let supabaseClient = null;
-let communityUser = null;
-const REVIEW_PRODUCTS = {
-    'acai-300ml': 'Açaí 300ml',
-    'acai-500ml': 'Açaí 500ml',
-    'acai-700ml': 'Açaí 700ml',
-    'marmita-750ml': 'Açaí na marmita 750ml',
-    sensacao: 'Açaí Sensação',
-    moranguinho: 'Moranguinho',
-    'arco-iris': 'Arco-íris',
-    'banana-crunch': 'Banana Crunch',
-    'combo-arco-iris': 'Combo Arco-íris',
-    'combo-moranguinho': 'Combo Moranguinho',
-    'combo-sensacao': 'Combo Sensação'
-};
 
 const translations = {
             pt: {
@@ -403,194 +388,53 @@ function atualizarStatusAtendimento() {
     }
 }
 
-function setCommunityStatus(id, message, isError = false) {
-    const element = document.getElementById(id);
-    if (!element) return;
-    element.textContent = message;
-    element.classList.toggle('community-error', isError);
-}
-
-function updateCommunityAuthUI() {
-    const signInButton = document.getElementById('googleSignInButton');
-    const signOutButton = document.getElementById('googleSignOutButton');
-    const reviewForm = document.getElementById('reviewForm');
-    const marketingPanel = document.getElementById('marketingPanel');
-    const displayName = communityUser?.user_metadata?.full_name
-        || communityUser?.user_metadata?.name
-        || communityUser?.email
-        || '';
-    signInButton.hidden = Boolean(communityUser);
-    signOutButton.hidden = !communityUser;
-    reviewForm.hidden = !communityUser;
-    marketingPanel.hidden = !communityUser;
-    if (communityUser) {
-        setCommunityStatus('authStatus', `Você entrou como ${displayName}.`);
-        loadMarketingPreference();
-    } else {
-        setCommunityStatus('authStatus', 'Entre com Google para avaliar os produtos.');
-        document.getElementById('marketingOptIn').checked = false;
-        setCommunityStatus('marketingStatus', '');
-    }
-}
-
-async function signInWithGoogle() {
-    if (!supabaseClient) {
-        setCommunityStatus('authStatus', 'O login ainda não foi configurado. Confira URL e chave pública do Supabase.', true);
-        return;
-    }
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.href.split('#')[0] }
-    });
-    if (error) setCommunityStatus('authStatus', `Não foi possível iniciar o login: ${error.message}`, true);
-}
-
-async function signOutCommunity() {
-    if (!supabaseClient) return;
-    const { error } = await supabaseClient.auth.signOut();
-    if (error) setCommunityStatus('authStatus', `Não foi possível sair: ${error.message}`, true);
-    else {
-        communityUser = null;
-        updateCommunityAuthUI();
-    }
-}
-
-function getGoogleDisplayName(user) {
-    const metadata = user?.user_metadata || {};
-    return String(metadata.full_name || metadata.name || user?.email?.split('@')[0] || 'Cliente').slice(0, 120);
-}
-
-async function loadApprovedReviews() {
-    const list = document.getElementById('reviewsList');
-    if (!list) return;
-    if (!supabaseClient) {
-        list.textContent = 'As avaliações aparecerão aqui quando o banco e as tabelas de avaliações estiverem configurados.';
-        return;
-    }
-    const { data, error } = await supabaseClient
-        .from('product_reviews')
-        .select('product_slug, author_name, rating, comment, created_at')
-        .eq('status', 'approved')
-        .order('created_at', { ascending: false })
-        .limit(50);
-    list.replaceChildren();
-    if (error) {
-        list.textContent = 'Não foi possível carregar as avaliações agora.';
-        console.error('Erro ao carregar avaliações:', error);
-        return;
-    }
-    if (!data?.length) {
-        list.textContent = 'Ainda não há avaliações publicadas.';
-        return;
-    }
-    data.forEach((review) => {
-        const card = document.createElement('article');
-        card.className = 'review-card';
-        const title = document.createElement('strong');
-        title.textContent = REVIEW_PRODUCTS[review.product_slug] || 'Produto da loja';
-        const stars = document.createElement('span');
-        stars.className = 'review-stars';
-        stars.setAttribute('aria-label', `Nota ${review.rating} de 5`);
-        stars.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
-        const author = document.createElement('small');
-        author.textContent = `Por ${review.author_name}`;
-        const comment = document.createElement('p');
-        comment.textContent = review.comment;
-        card.append(title, stars, author, comment);
-        list.appendChild(card);
-    });
-}
-
-async function loadMarketingPreference() {
-    if (!supabaseClient || !communityUser) return;
-    const { data, error } = await supabaseClient
-        .from('marketing_preferences')
-        .select('opted_in')
-        .eq('user_id', communityUser.id)
-        .maybeSingle();
-    if (error) {
-        setCommunityStatus('marketingStatus', 'Não foi possível carregar sua preferência agora.', true);
-        return;
-    }
-    document.getElementById('marketingOptIn').checked = data?.opted_in === true;
-    setCommunityStatus('marketingStatus', data
-        ? (data.opted_in ? 'Você autorizou receber novidades por e-mail.' : 'Você não autorizou receber novidades por e-mail.')
-        : 'Você ainda não escolheu se quer receber novidades.');
-}
-
-async function saveMarketingPreference() {
-    if (!supabaseClient || !communityUser) return;
-    const optedIn = document.getElementById('marketingOptIn').checked;
-    const updatedAt = new Date().toISOString();
-    const { error } = await supabaseClient.from('marketing_preferences').upsert({
-        user_id: communityUser.id,
-        email: optedIn ? communityUser.email : null,
-        opted_in: optedIn,
-        updated_at: updatedAt,
-        opted_in_at: optedIn ? updatedAt : null
-    }, { onConflict: 'user_id' });
-    if (error) {
-        setCommunityStatus('marketingStatus', 'Não foi possível salvar sua preferência. Verifique se aplicou o SQL de avaliações e consentimentos.', true);
-        console.error('Erro ao salvar preferência de novidades:', error);
-        return;
-    }
-    setCommunityStatus('marketingStatus', optedIn
-        ? 'Autorização registrada. Você poderá cancelar essa opção aqui quando quiser.'
-        : 'Preferência salva: você não autorizou receber novidades por e-mail.');
-}
-
-async function submitProductReview(event) {
-    event.preventDefault();
-    if (!supabaseClient || !communityUser) {
-        setCommunityStatus('reviewStatus', 'Entre com Google antes de enviar uma avaliação.', true);
-        return;
-    }
-    const productSlug = document.getElementById('reviewProduct').value;
-    const rating = Number.parseInt(document.getElementById('reviewRating').value, 10);
-    const comment = document.getElementById('reviewComment').value.trim();
-    if (!Object.hasOwn(REVIEW_PRODUCTS, productSlug) || rating < 1 || rating > 5 || comment.length < 3) {
-        setCommunityStatus('reviewStatus', 'Escolha um produto, uma nota e escreva um comentário com pelo menos 3 caracteres.', true);
-        return;
-    }
-    const { error } = await supabaseClient.from('product_reviews').insert({
-        user_id: communityUser.id,
-        product_slug: productSlug,
-        author_name: getGoogleDisplayName(communityUser),
-        rating,
-        comment,
-        status: 'pending'
-    });
-    if (error) {
-        const message = error.code === '23505'
-            ? 'Você já enviou uma avaliação para esse produto.'
-            : 'Não foi possível enviar a avaliação. Verifique se aplicou o SQL de avaliações e consentimentos.';
-        setCommunityStatus('reviewStatus', message, true);
-        console.error('Erro ao enviar avaliação:', error);
-        return;
-    }
-    document.getElementById('reviewForm').reset();
-    setCommunityStatus('reviewStatus', 'Obrigado! Sua avaliação ficará aguardando aprovação da loja antes de aparecer no site.');
-}
-
-async function initializeCommunity() {
+async function salvarInscricaoNovidades(email) {
     const config = window.LOJA_CONFIG || {};
-    if (window.supabase?.createClient && config.supabaseUrl && config.supabaseAnonKey) {
-        supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-        supabaseClient.auth.onAuthStateChange((_event, session) => {
-            communityUser = session?.user || null;
-            window.setTimeout(updateCommunityAuthUI, 0);
-        });
-        const { data } = await supabaseClient.auth.getSession();
-        communityUser = data?.session?.user || null;
-        updateCommunityAuthUI();
-    } else {
-        setCommunityStatus('authStatus', 'Login e avaliações serão ativados após carregar o Supabase.');
+    if (!config.supabaseUrl || !config.supabaseAnonKey) {
+        throw new Error('O cadastro ainda não está conectado ao banco.');
     }
-    await loadApprovedReviews();
-    document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
-    document.getElementById('googleSignOutButton').addEventListener('click', signOutCommunity);
-    document.getElementById('saveMarketingPreference').addEventListener('click', saveMarketingPreference);
-    document.getElementById('reviewForm').addEventListener('submit', submitProductReview);
+    const baseUrl = config.supabaseUrl.replace(/\/$/, '');
+    const response = await fetch(`${baseUrl}/rest/v1/newsletter_subscribers`, {
+        method: 'POST',
+        headers: {
+            apikey: config.supabaseAnonKey,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({ email: email.toLowerCase(), marketing_consent: true })
+    });
+    if (response.status === 409) throw new Error('Este e-mail já está cadastrado para receber novidades.');
+    if (!response.ok) throw new Error('Não foi possível salvar. Confirme se o SQL da lista de novidades já foi executado no Supabase.');
+}
+
+async function cadastrarParaNovidades(event) {
+    event.preventDefault();
+    const form = document.getElementById('newsletterForm');
+    const emailInput = document.getElementById('newsletterEmail');
+    const consent = document.getElementById('newsletterConsent');
+    const status = document.getElementById('newsletterStatus');
+    const button = form.querySelector('button[type="submit"]');
+    if (!consent.checked) {
+        status.textContent = 'Marque a autorização para receber novidades antes de continuar.';
+        return;
+    }
+    const email = emailInput.value.trim();
+    if (!emailInput.checkValidity()) {
+        emailInput.reportValidity();
+        return;
+    }
+    button.disabled = true;
+    status.textContent = 'Salvando sua inscrição...';
+    try {
+        await salvarInscricaoNovidades(email);
+        form.reset();
+        status.textContent = 'Inscrição registrada. Obrigado! Para sair da lista, peça o cancelamento pelo WhatsApp da loja.';
+    } catch (error) {
+        status.textContent = error.message || 'Não foi possível salvar sua inscrição agora.';
+        console.error('Erro ao cadastrar e-mail para novidades:', error);
+    } finally {
+        button.disabled = false;
+    }
 }
 
 function alternarTutorial(aberto) {
@@ -678,5 +522,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.pronto-item, .combo-item, [id^="qtd_pronto_"], [id^="qtd_combo_"]').forEach((field) => field.addEventListener('change', calcularTotal));
     document.querySelectorAll('input[name="tamanho_custom"], .extra-item').forEach((field) => field.addEventListener('change', calcularTotal));
     calcularTotal();
-    initializeCommunity();
+    document.getElementById('newsletterForm').addEventListener('submit', cadastrarParaNovidades);
 });
