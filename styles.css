@@ -85,6 +85,30 @@
             margin-top: 0.5rem;
         }
 
+        .instagram-spotlight {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            width: min(100%, 34rem);
+            margin: 1.25rem auto .25rem;
+            padding: .85rem 1rem;
+            border: 1px solid rgba(255, 255, 255, .75);
+            border-radius: 14px;
+            color: #fff;
+            text-align: left;
+            text-decoration: none;
+            background: linear-gradient(110deg, rgba(255, 0, 127, .95), rgba(138, 43, 226, .95), rgba(74, 14, 78, .96));
+            box-shadow: 0 6px 22px rgba(18, 2, 22, .35), 0 0 16px rgba(255, 0, 127, .3);
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+        .instagram-spotlight:hover { transform: translateY(-2px); box-shadow: 0 9px 26px rgba(18, 2, 22, .45), 0 0 22px rgba(255, 0, 127, .45); }
+        .instagram-spotlight:focus-visible { outline: 3px solid var(--yellow-bright); outline-offset: 3px; }
+        .instagram-spotlight-icon { display: grid; place-items: center; flex: 0 0 2.6rem; width: 2.6rem; height: 2.6rem; border: 2px solid #fff; border-radius: 10px; font-size: 2rem; line-height: 1; }
+        .instagram-spotlight-copy { display: flex; flex: 1; flex-direction: column; gap: .2rem; }
+        .instagram-spotlight-copy strong { font-size: 1rem; }
+        .instagram-spotlight-copy small { color: rgba(255, 255, 255, .94); line-height: 1.35; }
+        .instagram-spotlight-action { white-space: nowrap; font-size: .88rem; font-weight: 800; }
+
         .business-hours-status {
             display: inline-flex;
             align-items: center;
@@ -395,7 +419,8 @@
 .pickup-address-card strong { display: block; color: var(--yellow-bright); margin-bottom: .3rem; }
 .pickup-address-card p { white-space: pre-line; margin-bottom: .4rem; }
 .pickup-address-card a { color: var(--yellow-bright); }
-.order-notice { margin-top: 1rem; padding: .9rem 1rem; color: #fff; background: rgba(255,0,127,.12); border-left: 4px solid var(--pink-accent); border-radius: 6px; line-height: 1.5; }
+.order-notice, .delivery-fee-notice { margin-top: 1rem; padding: .9rem 1rem; color: #fff; background: rgba(255,0,127,.12); border-left: 4px solid var(--pink-accent); border-radius: 6px; line-height: 1.5; }
+.delivery-fee-notice[hidden] { display: none; }
 .database-status { margin-top: .5rem; font-size: .85rem; color: #ccc; }
 .cart-items-list { display: flex; flex-direction: column; gap: .65rem; }
 .cart-empty-message { color: #ccc; }
@@ -407,6 +432,11 @@
 .cart-item-row .btn-remove-item:hover { background: var(--pink-accent); }
         @media (max-width: 600px) {
             .business-hours-summary { max-width: 22rem; font-size: 0.82rem; }
+            .instagram-spotlight { gap: .65rem; padding: .75rem; }
+            .instagram-spotlight-icon { flex-basis: 2.25rem; width: 2.25rem; height: 2.25rem; font-size: 1.7rem; }
+            .instagram-spotlight-copy strong { font-size: .92rem; }
+            .instagram-spotlight-copy small { font-size: .77rem; }
+            .instagram-spotlight-action { font-size: .75rem; }
   .language-picker-container { align-items: flex-start; gap: .7rem; flex-direction: column; }
   .header-actions { flex-wrap: wrap; }
   .help-tutorial { margin: .8rem 1rem 0; }
