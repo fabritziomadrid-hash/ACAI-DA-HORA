@@ -7,6 +7,7 @@ window.LOJA_CONFIG = Object.freeze({
   storeAddress: "Rua Mário Gasparin, 1042 - Sítio Cercado, Curitiba",
   storeMapUrl: "https://maps.app.goo.gl/JWHzdoPEsV7i5Xjd9",
   instagramUrl: "https://www.instagram.com/acaidah.ora/",
+  facebookUrl: "https://www.facebook.com/",
   businessTimeZone: "America/Sao_Paulo",
   businessHours: {
     domingo: [{ open: "15:00", close: "21:00" }],
