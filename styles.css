@@ -488,3 +488,17 @@ body { padding-bottom: 2rem; }
   .cart-floating-action { display: none; }
   .tutorial-steps { grid-template-columns: 1fr; }
 }
+
+/* Checkout: endereço separado e finalização */
+.address-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 130px minmax(0, 1fr);
+    gap: .7rem;
+}
+.address-fields .form-control { margin-top: .5rem; }
+.field-help { display: block; margin-top: .45rem; color: #cfcfcf; font-size: .78rem; }
+.checkout-order-button { width: 100%; margin-top: 1rem; }
+@media (max-width: 600px) {
+    .address-fields { grid-template-columns: 1fr; gap: .15rem; }
+    .address-fields .form-control { margin-top: .5rem; }
+}
