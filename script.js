@@ -296,11 +296,11 @@ function irParaCheckout() {
 function atualizarFormaRecebimento() {
     const retirada = document.querySelector('input[name="recebimento"]:checked')?.value === 'retirada';
     const addressGroup = document.getElementById('deliveryAddressGroup');
-    const addressInput = document.getElementById('endereco');
+    const addressInputs = ['rua', 'numero', 'bairro'].map((id) => document.getElementById(id));
     const pickupCard = document.getElementById('pickupAddressCard');
     const deliveryFeeNotice = document.getElementById('deliveryFeeNotice');
     addressGroup.hidden = retirada;
-    addressInput.required = !retirada;
+    addressInputs.forEach((input) => { if (input) input.required = !retirada; });
     pickupCard.hidden = !retirada;
     deliveryFeeNotice.hidden = retirada;
 }
@@ -446,14 +446,20 @@ async function salvarPedidoNoBanco(pedido) {
 async function enviarPedido() {
     const nome = document.getElementById('nome').value.trim();
     const forma = document.querySelector('input[name="recebimento"]:checked')?.value || 'entrega';
-    const endereco = document.getElementById('endereco').value.trim();
+    const rua = document.getElementById('rua').value.trim();
+    const numero = document.getElementById('numero').value.trim();
+    const bairro = document.getElementById('bairro').value.trim();
     const itens = coletarItensPedido();
     const totalCents = itens.reduce((sum, item) => sum + item.subtotal_cents, 0);
     if (!nome) { alert('Por favor, informe seu nome.'); return; }
-    if (forma === 'entrega' && !endereco) { alert('Por favor, preencha seu endereço de entrega.'); return; }
+    if (forma === 'entrega' && (!rua || !numero || !bairro)) {
+        alert('Para entrega, preencha obrigatoriamente a rua, o número e o bairro.');
+        return;
+    }
     if (!itens.length || totalCents <= 0) { alert('Adicione pelo menos um item ao pedido!'); return; }
 
     const config = window.LOJA_CONFIG || {};
+    const endereco = forma === 'entrega' ? `Rua: ${rua}, Nº: ${numero}, Bairro: ${bairro}` : '';
     const destino = forma === 'retirada' ? 'Retirada na loja' : `Entrega (consultar taxa) — ${endereco}`;
     let mensagem = `🍇 *NOVO PEDIDO - AÇAÍ DA HORA* 🍇\n\n`;
     mensagem += `👤 *Cliente:* ${nome}\n📍 *Recebimento:* ${destino}\n\n*ITENS DO PEDIDO:*\n`;
