@@ -387,8 +387,13 @@
             </div>
             <p id="deliveryFeeNotice" class="delivery-fee-notice" role="note" aria-live="polite" hidden><strong>Entrega (consultar taxa):</strong> a taxa será informada pelo WhatsApp e não está incluída no total mostrado no site.</p>
             <div class="form-group" id="deliveryAddressGroup">
-                <label for="endereco" data-i18n="labelAddress">Endereço de Entrega:</label>
-                <input type="text" id="endereco" class="form-control" placeholder="Rua, Número, Bairro" autocomplete="street-address">
+                <label data-i18n="labelAddress">Endereço de Entrega:</label>
+                <div class="address-fields">
+                    <input type="text" id="rua" class="form-control" placeholder="Rua" autocomplete="street-address" required>
+                    <input type="text" id="numero" class="form-control address-number" placeholder="Número" inputmode="numeric" required>
+                    <input type="text" id="bairro" class="form-control" placeholder="Bairro" autocomplete="address-level3" required>
+                </div>
+                <small class="field-help">Preencha rua, número e bairro para concluir a entrega.</small>
             </div>
             <aside id="pickupAddressCard" class="pickup-address-card" hidden aria-live="polite">
                 <strong>Endereço para retirada na loja</strong>
@@ -402,6 +407,7 @@
             </div>
             <p class="order-notice" role="note"><strong>Atenção:</strong> seu pedido será confirmado após o envio do comprovante de pagamento pelo WhatsApp.</p>
             <p id="databaseStatus" class="database-status" aria-live="polite"></p>
+            <button type="button" class="btn-order checkout-order-button" onclick="enviarPedido()" data-i18n="btnOrder">Enviar Pedido pelo WhatsApp 🚀</button>
         </div>
 
     </div>
