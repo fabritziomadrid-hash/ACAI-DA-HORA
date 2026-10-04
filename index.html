@@ -11,16 +11,17 @@
 
     <div class="language-picker-container">
             <div class="header-actions">
-                <a id="instagramLink" class="header-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram da loja</a>
+                <a id="instagramLink" class="header-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
+                <a id="facebookLink" class="header-link" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
                 <button id="helpToggle" class="header-link help-toggle" type="button" aria-expanded="false" aria-controls="helpTutorial">Precisa de ajuda?</button>
             </div>
 
         <div>
-            <label for="languageSelect" data-i18n="selectLanguage">Idioma / Language:</label>
+            <label for="languageSelect" data-i18n="selectLanguage">Idioma:</label>
             <select id="languageSelect" class="lang-select" onchange="changeLanguage(this.value)">
-                <option value="pt" selected>Português (PT)</option>
-                <option value="es">Español (ES)</option>
-                <option value="en">English (EN)</option>
+                <option value="pt" selected>Português</option>
+                <option value="es">Español</option>
+                <option value="en">English</option>
             </select>
         </div>
     </div>
@@ -48,16 +49,19 @@
 
     <section id="helpTutorial" class="help-tutorial" hidden aria-labelledby="helpTitle">
         <div class="help-tutorial-heading">
-            <h2 id="helpTitle">Como fazer seu pedido</h2>
+            <div>
+                <span class="tutorial-kicker">GUIA RÁPIDO</span>
+                <h2 id="helpTitle">Como fazer seu pedido</h2>
+            </div>
             <button id="helpClose" class="btn-close-help" type="button" aria-label="Fechar tutorial">Fechar</button>
         </div>
-        <ol>
-            <li>Escolha o tamanho e os adicionais para montar seu açaí, ou selecione um açaí pronto/ combo.</li>
-            <li>Confira o total no rodapé. Para açaí montado, clique em “Adicionar este Açaí ao Pedido”.</li>
-            <li>Informe seu nome e escolha entrega ou retirada na loja. Se retirar, o endereço da loja aparece na tela.</li>
-            <li>Clique em “Enviar Pedido” para abrir o WhatsApp com o resumo e concluir o atendimento.</li>
-            <li>Faça o pagamento via PIX e envie o comprovante pelo WhatsApp. O pedido só será confirmado depois do envio do comprovante.</li>
-        </ol>
+        <div class="tutorial-steps">
+            <div class="tutorial-step"><span>1</span><p><strong>Monte seu açaí</strong><br>Escolha o tamanho, frutas e adicionais.</p></div>
+            <div class="tutorial-step"><span>2</span><p><strong>Revise o carrinho</strong><br>Confira itens, quantidades e total.</p></div>
+            <div class="tutorial-step"><span>3</span><p><strong>Informe seus dados</strong><br>Escolha entrega ou retirada na loja.</p></div>
+            <div class="tutorial-step"><span>4</span><p><strong>Envie o pedido</strong><br>O WhatsApp abrirá com o resumo.</p></div>
+            <div class="tutorial-step tutorial-step-highlight"><span>5</span><p><strong>Confirme o pagamento</strong><br>Envie o comprovante do Pix pelo WhatsApp.</p></div>
+        </div>
     </section>
 
     <div class="container">
@@ -70,26 +74,26 @@
                 <label class="option-card">
                     <img src="imagens/300ml.png" alt="300ml">
                     <strong>300ml</strong>
-                    <span class="price-tag">R$ 13,00</span>
-                    <input type="radio" name="tamanho_custom" value="300ml" data-preco="13.00">
+                    <span class="price-tag">R$ 14,00</span>
+                    <input type="radio" name="tamanho_custom" value="300ml" data-preco="14.00">
                 </label>
                 <label class="option-card">
                     <img src="imagens/500ml.png" alt="500ml">
                     <strong>500ml</strong>
-                    <span class="price-tag">R$ 20,00</span>
-                    <input type="radio" name="tamanho_custom" value="500ml" data-preco="20.00">
+                    <span class="price-tag">R$ 21,00</span>
+                    <input type="radio" name="tamanho_custom" value="500ml" data-preco="21.00">
                 </label>
                 <label class="option-card">
                     <img src="imagens/700ml.png" alt="700ml">
                     <strong>700ml</strong>
-                    <span class="price-tag">R$ 27,00</span>
-                    <input type="radio" name="tamanho_custom" value="700ml" data-preco="27.00">
+                    <span class="price-tag">R$ 28,00</span>
+                    <input type="radio" name="tamanho_custom" value="700ml" data-preco="28.00">
                 </label>
                 <label class="option-card">
                     <img src="imagens/acainamarmita.png" alt="Açaí na marmita">
                     <strong>Açaí na marmita 750ml</strong>
-                    <span class="price-tag">R$ 30,00</span>
-                    <input type="radio" name="tamanho_custom" value="Açaí na marmita 750ml" data-preco="30.00">
+                    <span class="price-tag">R$ 31,00</span>
+                    <input type="radio" name="tamanho_custom" value="Açaí na marmita 750ml" data-preco="31.00">
                 </label>
             </div>
         </div>
@@ -98,10 +102,10 @@
             <div class="step-title" data-i18n="step2Title">Acompanhamentos (9 Opções)</div>
             <div class="options-grid">
                 <label class="option-card">
-                    <img src="imagens/leiteempo.png" alt="Leite em Pó">
-                    <strong data-i18n="itemLeitePo">Leite em Pó</strong>
-                    <span class="price-tag">+R$ 1,50</span>
-                    <input type="checkbox" class="extra-item" name="acomp" value="Leite em Pó" data-preco="1.50">
+                    <img src="imagens/leiteempo.png" alt="Leite Ninho">
+                    <strong data-i18n="itemLeitePo">Leite Ninho</strong>
+                    <span class="price-tag">+R$ 2,50</span>
+                    <input type="checkbox" class="extra-item" name="acomp" value="Leite Ninho" data-preco="2.50">
                 </label>
                 <label class="option-card">
                     <img src="imagens/leitecondensado.png" alt="Leite Condensado">
@@ -244,7 +248,7 @@
                     <img src="imagens/moranguinho.png" alt="Moranguinho">
                     <strong>2. Moranguinho</strong>
                     <span class="price-tag"><span data-i18n="fromText">A partir de</span> R$ 18,00</span>
-                    <button type="button" class="btn-details" onclick="mostrarDetalhes('Moranguinho', 'Açaí com morango, leite em pó e cobertura de morango.')">Detalhes</button>
+                    <button type="button" class="btn-details" onclick="mostrarDetalhes('Moranguinho', 'Açaí com morango, Leite Ninho e cobertura de morango.')">Detalhes</button>
                     <select class="select-input pronto-item" id="pronto_2" data-base="18.00" onchange="calcularTotal()">
                         <option value="" data-add="0" data-i18n="optNone">-- Não adicionar --</option>
                         <option value="300ml" data-add="0">300ml (R$ 18,00)</option>
@@ -330,7 +334,7 @@
                     <strong data-i18n="comboGalera">2 Açaís Moranguinho</strong>
                     <span data-i18n="comboGaleraDesc">Com Desconto!</span>
                     <span class="price-tag"><span data-i18n="fromText">A partir de</span> R$ 31,90</span>
-                    <button type="button" class="btn-details" onclick="mostrarDetalhes('Combo Moranguinho', '2 Copos de Açaí com morango, leite em pó e cobertura de morango')">Detalhes</button>
+                    <button type="button" class="btn-details" onclick="mostrarDetalhes('Combo Moranguinho', '2 Copos de Açaí com morango, Leite Ninho e cobertura de morango')">Detalhes</button>
                     <select class="select-input combo-item" id="combo_2" data-nome="2 Açaís Moranguinho" onchange="calcularTotal()">
                         <option value="" data-preco="0" data-i18n="optNone">-- Não adicionar --</option>
                         <option value="300ml" data-preco="31.90">2x 300ml (R$ 31,90)</option>
@@ -368,13 +372,7 @@
         </div>
 
         <h2 class="section-title" data-i18n="checkoutTitle">Finalizar Pedido</h2>
-        <div class="step-box cart-summary-box">
-            <div class="step-title">Itens do pedido</div>
-            <div id="cartItems" class="cart-items-list" aria-live="polite">
-                <p class="cart-empty-message">Seu carrinho está vazio. Selecione um açaí ou combo.</p>
-            </div>
-        </div>
-        <div class="step-box">
+        <div id="checkout-section" class="step-box">
             <div class="form-group">
                 <label for="nome" data-i18n="labelName">Seu Nome:</label>
                 <input type="text" id="nome" class="form-control" placeholder="Digite seu nome">
@@ -408,11 +406,22 @@
 
     </div>
 
-    <div class="cart-bar">
-        <div class="cart-info">
-            <span data-i18n="totalText">Total:</span> <strong id="totalValue" style="color: var(--yellow-bright);">R$ 0,00</strong>
+    <button type="button" class="cart-bar" onclick="abrirCarrinho()" aria-label="Abrir carrinho">
+        <span class="cart-icon" aria-hidden="true">🛒</span>
+        <span class="cart-floating-info"><strong id="cartCount">0 itens</strong><small>Total: <b id="totalValue">R$ 0,00</b></small></span>
+        <span class="cart-floating-action">Ver carrinho</span>
+    </button>
+    <div id="cartDrawer" class="cart-drawer" hidden aria-labelledby="cartDrawerTitle">
+        <div class="cart-drawer-content">
+            <div class="cart-drawer-header">
+                <div><span class="tutorial-kicker">SEU PEDIDO</span><h2 id="cartDrawerTitle">Carrinho</h2></div>
+                <button type="button" class="btn-close-help" onclick="fecharCarrinho()" aria-label="Fechar carrinho">Fechar</button>
+            </div>
+            <div id="cartItems" class="cart-items-list" aria-live="polite">
+                <p class="cart-empty-message">Seu carrinho está vazio. Selecione um açaí ou combo.</p>
+            </div>
+            <button type="button" class="btn-order drawer-order-button" onclick="irParaCheckout()" data-i18n="btnOrder">Continuar pedido 🚀</button>
         </div>
-        <button type="button" class="btn-order" onclick="enviarPedido()" data-i18n="btnOrder">Enviar Pedido 🚀</button>
     </div>
 
     <!-- Modal de Detalhes -->
@@ -431,9 +440,14 @@
 
     <!-- Rodapé -->
     <footer class="site-footer">
-        <p><strong>Açaí da Hora</strong> &copy; 2026 - Todos os direitos reservados.</p>
-        <p>Desenvolvido com 🍇 para o melhor atendimento.</p>
-        <p class="footer-credits">Hospedado via <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a></p>
+        <div class="footer-content">
+            <div><p class="footer-brand"><strong>Açaí da Hora</strong></p><p>O açaí mais cremoso da cidade.</p></div>
+            <div class="social-links" aria-label="Redes sociais">
+                <span class="social-title">Siga nossas redes sociais</span>
+                <div><a id="instagramFooterLink" href="https://www.instagram.com/acaidah.ora/" target="_blank" rel="noopener noreferrer">Instagram</a><a id="facebookFooterLink" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a></div>
+            </div>
+            <div><p class="footer-credits">&copy; 2026 Açaí da Hora. Todos os direitos reservados.</p><p class="footer-credits">Hospedado via <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a></p></div>
+        </div>
     </footer>
 
     <script src="config.js"></script>
