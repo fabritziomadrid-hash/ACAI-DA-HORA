@@ -3,7 +3,7 @@ let acaisCustomizados = [];
 
 const translations = {
             pt: {
-                selectLanguage: "Idioma / Language:",
+                selectLanguage: "Idioma:",
                 tagline: "O açaí mais cremoso da cidade!",
                 option1Title: "Opção 1: Monte seu Açaí",
                 step1Title: "1. Escolha o Tamanho",
@@ -30,7 +30,7 @@ const translations = {
                 pixBadge: "❖ PAGAMENTO ÚNICO VIA PIX",
                 totalText: "Total:",
                 btnOrder: "Enviar Pedido 🚀",
-                itemLeitePo: "Leite em Pó",
+                itemLeitePo: "Leite Ninho",
                 itemFarofa: "Farofa de amendoim",
                 itemCoco: "Chocoball",
                 itemBanana: "Banana",
@@ -66,7 +66,7 @@ const translations = {
                 pixBadge: "❖ PAGO ÚNICO VÍA PIX",
                 totalText: "Total:",
                 btnOrder: "Enviar Pedido 🚀",
-                itemLeitePo: "Leche en Polvo",
+                itemLeitePo: "Leche Nido",
                 itemFarofa: "Cacahuate molido",
                 itemCoco: "Chocoball",
                 itemBanana: "Banana",
@@ -102,7 +102,7 @@ const translations = {
                 pixBadge: "❖ SINGLE PAYMENT VIA PIX",
                 totalText: "Total:",
                 btnOrder: "Send Order 🚀",
-                itemLeitePo: "Milk Powder",
+                itemLeitePo: "Ninho Milk Powder",
                 itemFarofa: "Peanut Powder",
                 itemCoco: "Chocoball",
                 itemBanana: "Banana",
@@ -222,6 +222,8 @@ function calcularTotal() {
     renderizarCarrinho(itens);
     const total = itens.reduce((sum, item) => sum + item.subtotal_cents, 0);
     document.getElementById('totalValue').innerText = formatarReais(total);
+    const cartCount = document.getElementById('cartCount');
+    if (cartCount) cartCount.textContent = `${itens.reduce((sum, item) => sum + item.quantidade, 0)} ${itens.reduce((sum, item) => sum + item.quantidade, 0) === 1 ? 'item' : 'itens'}`;
     return total;
 }
 
@@ -274,6 +276,23 @@ function renderizarCarrinho(itens = coletarItensPedido()) {
     });
 }
 
+function abrirCarrinho() {
+    const drawer = document.getElementById('cartDrawer');
+    if (!drawer) return;
+    drawer.hidden = false;
+    document.body.classList.add('cart-open');
+}
+function fecharCarrinho() {
+    const drawer = document.getElementById('cartDrawer');
+    if (!drawer) return;
+    drawer.hidden = true;
+    document.body.classList.remove('cart-open');
+}
+function irParaCheckout() {
+    fecharCarrinho();
+    document.getElementById('checkout-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function atualizarFormaRecebimento() {
     const retirada = document.querySelector('input[name="recebimento"]:checked')?.value === 'retirada';
     const addressGroup = document.getElementById('deliveryAddressGroup');
@@ -291,6 +310,13 @@ function preencherDadosLoja() {
     instagram.href = config.instagramUrl || 'https://www.instagram.com/';
     const instagramHero = document.getElementById('instagramHeroLink');
     if (instagramHero) instagramHero.href = config.instagramUrl || 'https://www.instagram.com/';
+    const facebook = config.facebookUrl || 'https://www.facebook.com/';
+    ['facebookLink', 'facebookFooterLink'].forEach((id) => {
+        const link = document.getElementById(id);
+        if (link) link.href = facebook;
+    });
+    const instagramFooter = document.getElementById('instagramFooterLink');
+    if (instagramFooter) instagramFooter.href = config.instagramUrl || 'https://www.instagram.com/';
     const address = config.storeAddress || 'Cadastre o endereço da loja no arquivo config.js.';
     document.getElementById('storeAddressText').textContent = address;
     document.getElementById('storeMapLink').href = config.storeMapUrl || 'https://maps.google.com/';
